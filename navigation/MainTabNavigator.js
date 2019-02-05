@@ -3,16 +3,43 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
+
 import HomeScreen from '../screens/HomeScreen';
+import SelectClientScreen from '../screens/Course/SelectClientScreen';
+import SelectDateScreen from '../screens/Course/SelectDateScreen';
+import AddToCalendarScreen from '../screens/Course/AddToCalendar';
+
 import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
 
 const HomeStack = createStackNavigator({
-  Home: HomeScreen,
+  Home: {
+    screen: HomeScreen,
+    navigationOptions: ({ navigation }) => ({
+      header: null,
+    }),
+  },
+  SelectClient: {
+    screen: SelectClientScreen,
+    navigationOptions : {
+      title: 'Sélectionner un client'
+    }
+  },
+  SelectDate: {
+    screen: SelectDateScreen,
+    navigationOptions : {
+      title: 'Sélectionner la date du rdv'
+    }
+  },
+  AddToCalendar: {
+    screen: AddToCalendarScreen,
+    navigationOptions : {
+      title: 'Ajouter au calendrier'
+    }
+  }
 });
 
 HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+  tabBarLabel: 'Course',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -22,7 +49,7 @@ HomeStack.navigationOptions = {
           : 'md-information-circle'
       }
     />
-  ),
+  )
 };
 
 const LinksStack = createStackNavigator({
@@ -39,22 +66,7 @@ LinksStack.navigationOptions = {
   ),
 };
 
-const SettingsStack = createStackNavigator({
-  Settings: SettingsScreen,
-});
-
-SettingsStack.navigationOptions = {
-  tabBarLabel: 'Settings',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
-    />
-  ),
-};
-
 export default createBottomTabNavigator({
   HomeStack,
-  LinksStack,
-  SettingsStack,
+  LinksStack
 });
