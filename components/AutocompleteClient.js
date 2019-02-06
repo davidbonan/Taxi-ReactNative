@@ -11,7 +11,8 @@ export default class AutocompleteClient extends React.Component {
         super(props)
         
         this.state = {
-            query: ''
+            query: '',
+            hideResults: true
         }
     }
 
@@ -24,9 +25,15 @@ export default class AutocompleteClient extends React.Component {
         return data.filter(client => client.name.search(regex) >= 0);
     }
 
+    handleChangeText (text) {
+        const { handleChangeText } = this.props;
+        this.setState({ query: text, hideResults: false });
+        handleChangeText(text);
+    }
+
     handleSelectClient (client) {
         const { handleSelectClient } = this.props;
-        this.setState({query: client.name});
+        this.setState({query: client.name, hideResults: true});
         handleSelectClient(client);
     }
 
@@ -46,6 +53,7 @@ export default class AutocompleteClient extends React.Component {
                 <Autocomplete
                     data={clients.length === 1 && comp(query, clients[0].name) ? [] : clients}
                     defaultValue={query}
+                    //hideResults={this.state.hideResults}
                     keyboardShouldPersistTaps="always"
                     autoCorrect={false}
                     containerStyle={styles.autocompleteContainer}
@@ -53,11 +61,11 @@ export default class AutocompleteClient extends React.Component {
                     inputContainerStyle={styles.autocompleteInputContainer}
                     listContainerStyle={styles.autocompleteListContainer}
                     listStyle={styles.autocompleteList}
-                    onChangeText={text => this.setState({ query: text })}
+                    onChangeText={this.handleChangeText.bind(this)}
                     renderItem={item => (
                     <TouchableOpacity style={styles.itemContainer} onPress={this.handleSelectClient.bind(this, item)}>
                         <Text style={styles.itemText}>{item.name}</Text>
-                        <Text style={styles.adrText}>{item.adr}</Text>
+                        <Text style={styles.adrText}>{item.address}</Text>
                     </TouchableOpacity>
                     )}
                 />
