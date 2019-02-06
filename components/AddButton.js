@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet} from "react-native";
-import { Icon } from 'expo';
+import { Icon, LinearGradient } from 'expo';
 
 import Colors from '../constants/Colors';
 
@@ -18,14 +18,20 @@ export default class AddButton extends React.Component {
         return (
             <TouchableOpacity
                 onPress={() => navigateTo(routeName)}
-                style={[styles.buttonContainer, {backgroundColor: this.state.backgroundColor}]} 
+                //style={[{backgroundColor: this.state.backgroundColor}]} 
             >
-                <Icon.Ionicons
-                    name='ios-add'
-                    size={56}
-                    style={styles.button}
-                    color='#fff'
-                />
+                <LinearGradient
+                    colors={['#57c1fb', '#1c84e5']}
+                    style={styles.buttonContainer}
+                >
+                    <Icon.Ionicons
+                        name='ios-add'
+                        size={56}
+                        style={styles.button}
+                        color='#fff'
+                    />
+                </LinearGradient>
+                
             </TouchableOpacity>
         );
     }

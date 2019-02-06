@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import AutocompleteClient from '../../components/AutocompleteClient';
+import { Button } from 'react-native-ios-kit';
 
 export default class SelectClientScreen extends React.Component {
 
@@ -34,9 +35,11 @@ export default class SelectClientScreen extends React.Component {
         <AutocompleteClient handleSelectClient={ this.handleSelectClient.bind(this) } />
         {
           Number.isInteger(this.state.idClient) ? (
-            <TouchableOpacity onPress={this.handleSubmit.bind(this)} >
-              <Text>Valider</Text>
-            </TouchableOpacity>
+            <View style={ styles.buttonContainer }>
+              <Button rounded inverted onPress={this.handleSubmit.bind(this)}>
+                Suivant
+              </Button>
+            </View>
           ) : (
             <View></View>
           )
@@ -50,6 +53,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#efeff4',
   },
+  buttonContainer: {
+    margin: 10
+  }
 });
