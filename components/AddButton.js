@@ -1,6 +1,7 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet} from "react-native";
-import { Icon, LinearGradient } from 'expo';
+import { Icon } from 'react-native-ios-kit';
+import LinearGradient from 'react-native-linear-gradient';
 
 import Colors from '../constants/Colors';
 
@@ -24,7 +25,7 @@ export default class AddButton extends React.Component {
                     colors={['#57c1fb', '#1c84e5']}
                     style={styles.buttonContainer}
                 >
-                    <Icon.Ionicons
+                    <Icon
                         name='ios-add'
                         size={56}
                         style={styles.button}
