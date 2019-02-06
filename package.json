@@ -11,13 +11,13 @@
     "react-native": "0.58.4",
     "react-native-add-calendar-event": "^2.3.0",
     "react-native-autocomplete-input": "^3.6.0",
+    "react-native-gesture-handler": "^1.0.15",
     "react-native-ios-kit": "0.0.7",
     "react-native-keyboard-aware-scroll-view": "^0.8.0",
     "react-native-linear-gradient": "^2.5.3",
+    "react-native-pod": "^1.10.4",
     "react-native-vector-icons": "^6.2.0",
-    "react-navigation": "^3.0.9",
-    "react-redux": "^6.0.0",
-    "redux": "^4.0.1"
+    "react-navigation": "^3.1.5"
   },
   "devDependencies": {
     "babel-core": "7.0.0-bridge.0",
