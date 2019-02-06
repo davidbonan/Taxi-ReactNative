@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet, Text, View} from "react-native";
 import Autocomplete from 'react-native-autocomplete-input';
-import { Icon } from 'expo';
+import { Icon } from 'react-native-ios-kit';
 
 import Colors from '../constants/Colors';
 import data from '../constants/data-client.json'
@@ -44,7 +44,7 @@ export default class AutocompleteClient extends React.Component {
 
         return (
             <View style={styles.container}>
-                <Icon.Ionicons
+                <Icon
                     name='ios-person'
                     size={26}
                     style={ styles.autocompleteIcon }

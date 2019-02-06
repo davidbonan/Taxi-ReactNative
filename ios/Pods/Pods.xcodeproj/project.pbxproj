@@ -1,0 +1,928 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0470AE7F2DA461003AFE813C1B60AC53 /* Pods-MyTaxis-tvOS-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A462DF838105C8181994A217CE5C60B4 /* Pods-MyTaxis-tvOS-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0C4155BC2FC5972BB55D2D351C0D2F74 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12EA7F453C881E24340B531D2D2133D0 /* Foundation.framework */; };
+		251FF55689ECE10CD30F6BDED1CFD898 /* Pods-MyTaxisTests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8576D3CD88B8D8333525153F8788DA9D /* Pods-MyTaxisTests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2CB64760088C6947C85EEB9FF0892C28 /* Pods-MyTaxis-tvOSTests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 3C60E6E030457B03867C2CB8FEA4B147 /* Pods-MyTaxis-tvOSTests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2F21EB547AA64118CA42CAC13AD3C9F9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BECBF1EDC84264AA8EE8912A034726A8 /* Foundation.framework */; };
+		35CF76EAFAD7CB17C8A5BEF891C8E6BE /* Pods-MyTaxis-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 327F51C7B8E6F90C68D3281759A57866 /* Pods-MyTaxis-dummy.m */; };
+		60FB534109304A5FDEBF934CEE762F23 /* Pods-MyTaxis-tvOS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3495F145A8E8A2FCE0B7C7366609B5 /* Pods-MyTaxis-tvOS-dummy.m */; };
+		C71623888F71EBE9684E88A388081DC2 /* Pods-MyTaxis-tvOSTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = ADB10045821B1AE03B9BE6B3E3BDDCA2 /* Pods-MyTaxis-tvOSTests-dummy.m */; };
+		CA70AFF2DFC883028C5D3F0F183EFF06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12EA7F453C881E24340B531D2D2133D0 /* Foundation.framework */; };
+		D0F5FF10EFB2654879D18461430C473E /* Pods-MyTaxisTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DB03937EA4794D0F3CCF12636CEFF0 /* Pods-MyTaxisTests-dummy.m */; };
+		DDB3BC1380004F26DB64104F919BA490 /* Pods-MyTaxis-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = E5CB2F1D200A1B4B282EF94C0D3104EF /* Pods-MyTaxis-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F0696F9B5CD2C2B32531FBCFCEC35D22 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BECBF1EDC84264AA8EE8912A034726A8 /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6691B7B91696701458F60E9A771FA24F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7242F6BBA04E3C4844687B15788639F1;
+			remoteInfo = "Pods-MyTaxis";
+		};
+		FE0421996ACC69BAF8EC6DE8243CDD40 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A7FF36FB354762C029823D2051FC1990;
+			remoteInfo = "Pods-MyTaxis-tvOS";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00137827CB8FDF5DF84AE1C85423F9BC /* Pods_MyTaxis.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_MyTaxis.framework; path = "Pods-MyTaxis.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		02F77E1150B5C58BD7792B7BAFE4AE2A /* Pods-MyTaxis-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MyTaxis-resources.sh"; sourceTree = "<group>"; };
+		1016E71F94EFD198CD277E5ABD00C6BA /* Pods-MyTaxis.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MyTaxis.modulemap"; sourceTree = "<group>"; };
+		10746E5ECCC8F0ADFE41290F45931463 /* Pods-MyTaxis-tvOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MyTaxis-tvOS.modulemap"; sourceTree = "<group>"; };
+		12EA7F453C881E24340B531D2D2133D0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		1E0F77418EA9D6694779E5ED542B11DF /* Pods-MyTaxis-tvOS-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MyTaxis-tvOS-resources.sh"; sourceTree = "<group>"; };
+		20BBF28623B5F36BC8C1E635A61FE5CC /* Pods-MyTaxis-tvOSTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MyTaxis-tvOSTests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		21644D9E30D244C8E8D339F5F50544C0 /* Pods_MyTaxisTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_MyTaxisTests.framework; path = "Pods-MyTaxisTests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		24390EFD555DD124430DFF9724065945 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		327F51C7B8E6F90C68D3281759A57866 /* Pods-MyTaxis-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MyTaxis-dummy.m"; sourceTree = "<group>"; };
+		376609745478EF5A4515D91CDFC1D3C0 /* Pods-MyTaxis-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MyTaxis-acknowledgements.markdown"; sourceTree = "<group>"; };
+		3C60E6E030457B03867C2CB8FEA4B147 /* Pods-MyTaxis-tvOSTests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MyTaxis-tvOSTests-umbrella.h"; sourceTree = "<group>"; };
+		400CF38AE03AE1AEFC4E9926148E3FA5 /* Pods-MyTaxis-tvOS-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MyTaxis-tvOS-acknowledgements.plist"; sourceTree = "<group>"; };
+		40A90AAD635A057B2F64F856F5408FA5 /* Pods-MyTaxisTests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MyTaxisTests-resources.sh"; sourceTree = "<group>"; };
+		4827D1F385B94498924A618B4F2DFCA4 /* Pods-MyTaxis-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MyTaxis-acknowledgements.plist"; sourceTree = "<group>"; };
+		4B1F7C9FB803DB6E992CB1C93B99B074 /* Pods_MyTaxis_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_MyTaxis_tvOS.framework; path = "Pods-MyTaxis-tvOS.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F10924BEBCF42AEE7DE448DB7A735CC /* Pods-MyTaxis-tvOSTests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MyTaxis-tvOSTests-frameworks.sh"; sourceTree = "<group>"; };
+		59C098B7BE15BABD2D804B775E389B4D /* Pods-MyTaxisTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MyTaxisTests-acknowledgements.plist"; sourceTree = "<group>"; };
+		60DB03937EA4794D0F3CCF12636CEFF0 /* Pods-MyTaxisTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MyTaxisTests-dummy.m"; sourceTree = "<group>"; };
+		67370163AFB686DB67086B53FBFE5B9C /* Pods-MyTaxis-tvOSTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MyTaxis-tvOSTests-acknowledgements.plist"; sourceTree = "<group>"; };
+		73B55E811796A40ABB8D0FA2B120D256 /* Pods_MyTaxis_tvOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_MyTaxis_tvOSTests.framework; path = "Pods-MyTaxis-tvOSTests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		73B69BDF3AB4FB909ED4C0E1B5610D5A /* Pods-MyTaxis-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MyTaxis-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		7A0A200463A6AAAFFB05B146947E6865 /* Pods-MyTaxis-tvOS-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MyTaxis-tvOS-acknowledgements.markdown"; sourceTree = "<group>"; };
+		7B908DD29E79799BB34A3AB2B513556E /* Pods-MyTaxisTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MyTaxisTests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		8576D3CD88B8D8333525153F8788DA9D /* Pods-MyTaxisTests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MyTaxisTests-umbrella.h"; sourceTree = "<group>"; };
+		8C041753FF24D260BDCC90AE1C68910A /* Pods-MyTaxisTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MyTaxisTests.modulemap"; sourceTree = "<group>"; };
+		95CFE53E3F5D066A7AA77109286E60E6 /* Pods-MyTaxis-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MyTaxis-frameworks.sh"; sourceTree = "<group>"; };
+		96DDEF335BE3A835B6450B5598692053 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D7942C4DE4F081A3BA161695D68A896 /* Pods-MyTaxisTests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MyTaxisTests-frameworks.sh"; sourceTree = "<group>"; };
+		A462DF838105C8181994A217CE5C60B4 /* Pods-MyTaxis-tvOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MyTaxis-tvOS-umbrella.h"; sourceTree = "<group>"; };
+		A5ACFF95546AE1CD22A227DF5999F2BD /* Pods-MyTaxis-tvOSTests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MyTaxis-tvOSTests-resources.sh"; sourceTree = "<group>"; };
+		AB6336A7C3D91B671EDE0DEE7EC42C8F /* Pods-MyTaxis.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MyTaxis.release.xcconfig"; sourceTree = "<group>"; };
+		ADB10045821B1AE03B9BE6B3E3BDDCA2 /* Pods-MyTaxis-tvOSTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MyTaxis-tvOSTests-dummy.m"; sourceTree = "<group>"; };
+		BECBF1EDC84264AA8EE8912A034726A8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		C13309653FA979F894C7033E684509BC /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C40C742EF88494458CBDFB28497BF6AE /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C8AEAC6780B0E9B34D954CA0190DF33B /* Pods-MyTaxis.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MyTaxis.debug.xcconfig"; sourceTree = "<group>"; };
+		CD05EED2C3C1599606D589E1D412AD02 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CEDBB754C031FD26A2F1FD9D34DFE2A8 /* Pods-MyTaxis-tvOSTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MyTaxis-tvOSTests.modulemap"; sourceTree = "<group>"; };
+		E1C1550435CCE29F178A997A2EE47457 /* Pods-MyTaxis-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MyTaxis-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		E5CB2F1D200A1B4B282EF94C0D3104EF /* Pods-MyTaxis-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MyTaxis-umbrella.h"; sourceTree = "<group>"; };
+		EB73111286DECABCC670E71A637736CF /* Pods-MyTaxisTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MyTaxisTests.debug.xcconfig"; sourceTree = "<group>"; };
+		EE3495F145A8E8A2FCE0B7C7366609B5 /* Pods-MyTaxis-tvOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MyTaxis-tvOS-dummy.m"; sourceTree = "<group>"; };
+		F046FD4DE82F7303E2DCFA536EF1C79C /* Pods-MyTaxis-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MyTaxis-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		F3BEDBD24FD285FEDC1D683CAC77D45E /* Pods-MyTaxis-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MyTaxis-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		F74E843F23FE1E8B322E698D13EBAEE8 /* Pods-MyTaxisTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MyTaxisTests.release.xcconfig"; sourceTree = "<group>"; };
+		FDDC4606B0E532CE24151AE79546FC19 /* Pods-MyTaxis-tvOS-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MyTaxis-tvOS-frameworks.sh"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D48B2EBA4D896EA0104A228A8EB8934 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C4155BC2FC5972BB55D2D351C0D2F74 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		37053213B7867B6A6A14C8A4271F3776 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0696F9B5CD2C2B32531FBCFCEC35D22 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4BD0C29716511687C00B7312CAACB10E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F21EB547AA64118CA42CAC13AD3C9F9 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB9EAE0187209186E8CD4D4C420D5EFE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CA70AFF2DFC883028C5D3F0F183EFF06 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		25CA4C92570E20D7DF41B477D889A705 /* Pods-MyTaxisTests */ = {
+			isa = PBXGroup;
+			children = (
+				96DDEF335BE3A835B6450B5598692053 /* Info.plist */,
+				8C041753FF24D260BDCC90AE1C68910A /* Pods-MyTaxisTests.modulemap */,
+				7B908DD29E79799BB34A3AB2B513556E /* Pods-MyTaxisTests-acknowledgements.markdown */,
+				59C098B7BE15BABD2D804B775E389B4D /* Pods-MyTaxisTests-acknowledgements.plist */,
+				60DB03937EA4794D0F3CCF12636CEFF0 /* Pods-MyTaxisTests-dummy.m */,
+				9D7942C4DE4F081A3BA161695D68A896 /* Pods-MyTaxisTests-frameworks.sh */,
+				40A90AAD635A057B2F64F856F5408FA5 /* Pods-MyTaxisTests-resources.sh */,
+				8576D3CD88B8D8333525153F8788DA9D /* Pods-MyTaxisTests-umbrella.h */,
+				EB73111286DECABCC670E71A637736CF /* Pods-MyTaxisTests.debug.xcconfig */,
+				F74E843F23FE1E8B322E698D13EBAEE8 /* Pods-MyTaxisTests.release.xcconfig */,
+			);
+			name = "Pods-MyTaxisTests";
+			path = "Target Support Files/Pods-MyTaxisTests";
+			sourceTree = "<group>";
+		};
+		33BEB17BDE18D0930DD8B2AEB2B5A9B6 /* Pods-MyTaxis */ = {
+			isa = PBXGroup;
+			children = (
+				C40C742EF88494458CBDFB28497BF6AE /* Info.plist */,
+				1016E71F94EFD198CD277E5ABD00C6BA /* Pods-MyTaxis.modulemap */,
+				376609745478EF5A4515D91CDFC1D3C0 /* Pods-MyTaxis-acknowledgements.markdown */,
+				4827D1F385B94498924A618B4F2DFCA4 /* Pods-MyTaxis-acknowledgements.plist */,
+				327F51C7B8E6F90C68D3281759A57866 /* Pods-MyTaxis-dummy.m */,
+				95CFE53E3F5D066A7AA77109286E60E6 /* Pods-MyTaxis-frameworks.sh */,
+				02F77E1150B5C58BD7792B7BAFE4AE2A /* Pods-MyTaxis-resources.sh */,
+				E5CB2F1D200A1B4B282EF94C0D3104EF /* Pods-MyTaxis-umbrella.h */,
+				C8AEAC6780B0E9B34D954CA0190DF33B /* Pods-MyTaxis.debug.xcconfig */,
+				AB6336A7C3D91B671EDE0DEE7EC42C8F /* Pods-MyTaxis.release.xcconfig */,
+			);
+			name = "Pods-MyTaxis";
+			path = "Target Support Files/Pods-MyTaxis";
+			sourceTree = "<group>";
+		};
+		3B70D59B56D39312DCAEAAEB1E4FD472 /* Pods-MyTaxis-tvOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				C13309653FA979F894C7033E684509BC /* Info.plist */,
+				CEDBB754C031FD26A2F1FD9D34DFE2A8 /* Pods-MyTaxis-tvOSTests.modulemap */,
+				20BBF28623B5F36BC8C1E635A61FE5CC /* Pods-MyTaxis-tvOSTests-acknowledgements.markdown */,
+				67370163AFB686DB67086B53FBFE5B9C /* Pods-MyTaxis-tvOSTests-acknowledgements.plist */,
+				ADB10045821B1AE03B9BE6B3E3BDDCA2 /* Pods-MyTaxis-tvOSTests-dummy.m */,
+				4F10924BEBCF42AEE7DE448DB7A735CC /* Pods-MyTaxis-tvOSTests-frameworks.sh */,
+				A5ACFF95546AE1CD22A227DF5999F2BD /* Pods-MyTaxis-tvOSTests-resources.sh */,
+				3C60E6E030457B03867C2CB8FEA4B147 /* Pods-MyTaxis-tvOSTests-umbrella.h */,
+				73B69BDF3AB4FB909ED4C0E1B5610D5A /* Pods-MyTaxis-tvOSTests.debug.xcconfig */,
+				E1C1550435CCE29F178A997A2EE47457 /* Pods-MyTaxis-tvOSTests.release.xcconfig */,
+			);
+			name = "Pods-MyTaxis-tvOSTests";
+			path = "Target Support Files/Pods-MyTaxis-tvOSTests";
+			sourceTree = "<group>";
+		};
+		5A8CE8058340022AE855C127A28C4E03 /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				12EA7F453C881E24340B531D2D2133D0 /* Foundation.framework */,
+			);
+			name = tvOS;
+			sourceTree = "<group>";
+		};
+		5F1123BAD307DC0B335B727C26B5217A /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				33BEB17BDE18D0930DD8B2AEB2B5A9B6 /* Pods-MyTaxis */,
+				F263D05333C1A336430F6DC23C786698 /* Pods-MyTaxis-tvOS */,
+				3B70D59B56D39312DCAEAAEB1E4FD472 /* Pods-MyTaxis-tvOSTests */,
+				25CA4C92570E20D7DF41B477D889A705 /* Pods-MyTaxisTests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		8910DE18F4068EE7F2F8E36E5101A369 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B0189968EF7671928A0419E2336FE0D8 /* iOS */,
+				5A8CE8058340022AE855C127A28C4E03 /* tvOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B0189968EF7671928A0419E2336FE0D8 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				BECBF1EDC84264AA8EE8912A034726A8 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		CF1408CF629C7361332E53B88F7BD30C = {
+			isa = PBXGroup;
+			children = (
+				24390EFD555DD124430DFF9724065945 /* Podfile */,
+				8910DE18F4068EE7F2F8E36E5101A369 /* Frameworks */,
+				FFA45F7863409B77EBEF3CCD32BBAF92 /* Products */,
+				5F1123BAD307DC0B335B727C26B5217A /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		F263D05333C1A336430F6DC23C786698 /* Pods-MyTaxis-tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				CD05EED2C3C1599606D589E1D412AD02 /* Info.plist */,
+				10746E5ECCC8F0ADFE41290F45931463 /* Pods-MyTaxis-tvOS.modulemap */,
+				7A0A200463A6AAAFFB05B146947E6865 /* Pods-MyTaxis-tvOS-acknowledgements.markdown */,
+				400CF38AE03AE1AEFC4E9926148E3FA5 /* Pods-MyTaxis-tvOS-acknowledgements.plist */,
+				EE3495F145A8E8A2FCE0B7C7366609B5 /* Pods-MyTaxis-tvOS-dummy.m */,
+				FDDC4606B0E532CE24151AE79546FC19 /* Pods-MyTaxis-tvOS-frameworks.sh */,
+				1E0F77418EA9D6694779E5ED542B11DF /* Pods-MyTaxis-tvOS-resources.sh */,
+				A462DF838105C8181994A217CE5C60B4 /* Pods-MyTaxis-tvOS-umbrella.h */,
+				F3BEDBD24FD285FEDC1D683CAC77D45E /* Pods-MyTaxis-tvOS.debug.xcconfig */,
+				F046FD4DE82F7303E2DCFA536EF1C79C /* Pods-MyTaxis-tvOS.release.xcconfig */,
+			);
+			name = "Pods-MyTaxis-tvOS";
+			path = "Target Support Files/Pods-MyTaxis-tvOS";
+			sourceTree = "<group>";
+		};
+		FFA45F7863409B77EBEF3CCD32BBAF92 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00137827CB8FDF5DF84AE1C85423F9BC /* Pods_MyTaxis.framework */,
+				4B1F7C9FB803DB6E992CB1C93B99B074 /* Pods_MyTaxis_tvOS.framework */,
+				73B55E811796A40ABB8D0FA2B120D256 /* Pods_MyTaxis_tvOSTests.framework */,
+				21644D9E30D244C8E8D339F5F50544C0 /* Pods_MyTaxisTests.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		7214C31C0A71055568684ED81EBBA77B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0470AE7F2DA461003AFE813C1B60AC53 /* Pods-MyTaxis-tvOS-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9A8BB033F2673D2E68C0F719AE7E3071 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				251FF55689ECE10CD30F6BDED1CFD898 /* Pods-MyTaxisTests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A0F39C24D8CCBA181B961D40A6B3DFE1 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DDB3BC1380004F26DB64104F919BA490 /* Pods-MyTaxis-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F44D511F6019EBC97A734056B43AAA4E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2CB64760088C6947C85EEB9FF0892C28 /* Pods-MyTaxis-tvOSTests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		2F5E19355524615A5FDD364796DD7687 /* Pods-MyTaxis-tvOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F1F837D3086A55FDBFC62A161B3531DC /* Build configuration list for PBXNativeTarget "Pods-MyTaxis-tvOSTests" */;
+			buildPhases = (
+				F44D511F6019EBC97A734056B43AAA4E /* Headers */,
+				0EFDAD52F09F1DADE363A0B795330F8B /* Sources */,
+				1D48B2EBA4D896EA0104A228A8EB8934 /* Frameworks */,
+				41F040F685E61ADC9FCB63D47851A9B9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D1CB12106DB06EB0CEEB281F8D93A48C /* PBXTargetDependency */,
+			);
+			name = "Pods-MyTaxis-tvOSTests";
+			productName = "Pods-MyTaxis-tvOSTests";
+			productReference = 73B55E811796A40ABB8D0FA2B120D256 /* Pods_MyTaxis_tvOSTests.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		7242F6BBA04E3C4844687B15788639F1 /* Pods-MyTaxis */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 784C80ED2EE73B04425B63559B809381 /* Build configuration list for PBXNativeTarget "Pods-MyTaxis" */;
+			buildPhases = (
+				A0F39C24D8CCBA181B961D40A6B3DFE1 /* Headers */,
+				91DE9988A82FA751AA3F94C38CC6A6E2 /* Sources */,
+				4BD0C29716511687C00B7312CAACB10E /* Frameworks */,
+				66128523601CE5D9D2A73CC2F48F3615 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-MyTaxis";
+			productName = "Pods-MyTaxis";
+			productReference = 00137827CB8FDF5DF84AE1C85423F9BC /* Pods_MyTaxis.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		A7FF36FB354762C029823D2051FC1990 /* Pods-MyTaxis-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 80B792A9BA6DE14723B218433237E355 /* Build configuration list for PBXNativeTarget "Pods-MyTaxis-tvOS" */;
+			buildPhases = (
+				7214C31C0A71055568684ED81EBBA77B /* Headers */,
+				25058C37034145B1ED26E07C70B2408B /* Sources */,
+				BB9EAE0187209186E8CD4D4C420D5EFE /* Frameworks */,
+				75F44E1F8E5E3DA8C78312433B55834A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-MyTaxis-tvOS";
+			productName = "Pods-MyTaxis-tvOS";
+			productReference = 4B1F7C9FB803DB6E992CB1C93B99B074 /* Pods_MyTaxis_tvOS.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		DFB253183ACB6168B8ED46A51AA39957 /* Pods-MyTaxisTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C856E09284B1DA396496F07F7DBCE128 /* Build configuration list for PBXNativeTarget "Pods-MyTaxisTests" */;
+			buildPhases = (
+				9A8BB033F2673D2E68C0F719AE7E3071 /* Headers */,
+				A62F3DAAE56444E91C1638F5FFEF25DA /* Sources */,
+				37053213B7867B6A6A14C8A4271F3776 /* Frameworks */,
+				ADB4BC5A391ABBDC13F605925E6FD870 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D155D171610C48EE16DD29EBF149F2D3 /* PBXTargetDependency */,
+			);
+			name = "Pods-MyTaxisTests";
+			productName = "Pods-MyTaxisTests";
+			productReference = 21644D9E30D244C8E8D339F5F50544C0 /* Pods_MyTaxisTests.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BFDFE7DC352907FC980B868725387E98 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0930;
+				LastUpgradeCheck = 0930;
+			};
+			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
+			productRefGroup = FFA45F7863409B77EBEF3CCD32BBAF92 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7242F6BBA04E3C4844687B15788639F1 /* Pods-MyTaxis */,
+				A7FF36FB354762C029823D2051FC1990 /* Pods-MyTaxis-tvOS */,
+				2F5E19355524615A5FDD364796DD7687 /* Pods-MyTaxis-tvOSTests */,
+				DFB253183ACB6168B8ED46A51AA39957 /* Pods-MyTaxisTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		41F040F685E61ADC9FCB63D47851A9B9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66128523601CE5D9D2A73CC2F48F3615 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		75F44E1F8E5E3DA8C78312433B55834A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ADB4BC5A391ABBDC13F605925E6FD870 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0EFDAD52F09F1DADE363A0B795330F8B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C71623888F71EBE9684E88A388081DC2 /* Pods-MyTaxis-tvOSTests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		25058C37034145B1ED26E07C70B2408B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60FB534109304A5FDEBF934CEE762F23 /* Pods-MyTaxis-tvOS-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91DE9988A82FA751AA3F94C38CC6A6E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				35CF76EAFAD7CB17C8A5BEF891C8E6BE /* Pods-MyTaxis-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A62F3DAAE56444E91C1638F5FFEF25DA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0F5FF10EFB2654879D18461430C473E /* Pods-MyTaxisTests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D155D171610C48EE16DD29EBF149F2D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Pods-MyTaxis";
+			target = 7242F6BBA04E3C4844687B15788639F1 /* Pods-MyTaxis */;
+			targetProxy = 6691B7B91696701458F60E9A771FA24F /* PBXContainerItemProxy */;
+		};
+		D1CB12106DB06EB0CEEB281F8D93A48C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Pods-MyTaxis-tvOS";
+			target = A7FF36FB354762C029823D2051FC1990 /* Pods-MyTaxis-tvOS */;
+			targetProxy = FE0421996ACC69BAF8EC6DE8243CDD40 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2B7A8750CA6DF18A0B89BB09CB2A0655 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F046FD4DE82F7303E2DCFA536EF1C79C /* Pods-MyTaxis-tvOS.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-MyTaxis-tvOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-MyTaxis-tvOS/Pods-MyTaxis-tvOS.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		3C139BEBF7C441912353A8423BEB53D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 4.2;
+				SYMROOT = "${SRCROOT}/../build";
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Release;
+		};
+		3C8B638433C6FE3A7EB359C5B0FE14FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F3BEDBD24FD285FEDC1D683CAC77D45E /* Pods-MyTaxis-tvOS.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-MyTaxis-tvOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-MyTaxis-tvOS/Pods-MyTaxis-tvOS.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		3D8CB7CBA0AEBCA83751CE84D846416E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB6336A7C3D91B671EDE0DEE7EC42C8F /* Pods-MyTaxis.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-MyTaxis/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-MyTaxis/Pods-MyTaxis.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		4253E3D9355425E7C2F7AF03867A0DA4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
+				SYMROOT = "${SRCROOT}/../build";
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Debug;
+		};
+		690B67BBEAD29C562334127C23FDBE95 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EB73111286DECABCC670E71A637736CF /* Pods-MyTaxisTests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-MyTaxisTests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-MyTaxisTests/Pods-MyTaxisTests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		AECE6B7D6EB9E9C008CE461347674FBF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C8AEAC6780B0E9B34D954CA0190DF33B /* Pods-MyTaxis.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-MyTaxis/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-MyTaxis/Pods-MyTaxis.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		B01BF6B3B2BEA6AF88AAD8CD001FE596 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F74E843F23FE1E8B322E698D13EBAEE8 /* Pods-MyTaxisTests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-MyTaxisTests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-MyTaxisTests/Pods-MyTaxisTests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		BF5DFF90BF74DB6B78853469F77C9607 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E1C1550435CCE29F178A997A2EE47457 /* Pods-MyTaxis-tvOSTests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-MyTaxis-tvOSTests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-MyTaxis-tvOSTests/Pods-MyTaxis-tvOSTests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		CAB5448144F26A6E071CDE6D13E9E245 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 73B69BDF3AB4FB909ED4C0E1B5610D5A /* Pods-MyTaxis-tvOSTests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-MyTaxis-tvOSTests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-MyTaxis-tvOSTests/Pods-MyTaxis-tvOSTests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4253E3D9355425E7C2F7AF03867A0DA4 /* Debug */,
+				3C139BEBF7C441912353A8423BEB53D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		784C80ED2EE73B04425B63559B809381 /* Build configuration list for PBXNativeTarget "Pods-MyTaxis" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AECE6B7D6EB9E9C008CE461347674FBF /* Debug */,
+				3D8CB7CBA0AEBCA83751CE84D846416E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		80B792A9BA6DE14723B218433237E355 /* Build configuration list for PBXNativeTarget "Pods-MyTaxis-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3C8B638433C6FE3A7EB359C5B0FE14FF /* Debug */,
+				2B7A8750CA6DF18A0B89BB09CB2A0655 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C856E09284B1DA396496F07F7DBCE128 /* Build configuration list for PBXNativeTarget "Pods-MyTaxisTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				690B67BBEAD29C562334127C23FDBE95 /* Debug */,
+				B01BF6B3B2BEA6AF88AAD8CD001FE596 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F1F837D3086A55FDBFC62A161B3531DC /* Build configuration list for PBXNativeTarget "Pods-MyTaxis-tvOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CAB5448144F26A6E071CDE6D13E9E245 /* Debug */,
+				BF5DFF90BF74DB6B78853469F77C9607 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+}
