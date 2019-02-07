@@ -1,9 +1,10 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Button, TextFieldRow, CheckboxRow } from 'react-native-ios-kit';
 import RNCalendarEvents from 'react-native-calendar-events';
 import moment from 'moment';
 import ItemCalendar from '../components/ItemCalendar';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default class SelectAssignationCoursesScreen extends React.Component {
     static navigationOptions = {
@@ -42,27 +43,41 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         this.setState({ events: events });
     }
 
-    render() {
+    renderItem(event) {
         return (
-            <ScrollView style={styles.container}>
-                <View>
-                    {
-                        !this.state.isLoading ? (
-                            this.state.events.map(event => (
-                                <ItemCalendar key={ event.id } 
-                                            title={event.title} 
-                                            location={ event.location }
-                                            startDate={ event.startDate }
-                                            selected={event.selected}
-                                            onPress={ this.handlerSelectItem.bind(this, event) }
-                                />
-                            ))
-                        ) : (
-                            <Text>Chargement</Text>
-                        )
-                    }
-                </View>
-            </ScrollView>
+            <ItemCalendar key={ event.id } 
+                title={event.title} 
+                location={ event.location }
+                startDate={ event.startDate }
+                selected={event.selected}
+                onPress={ this.handlerSelectItem.bind(this, event) }
+            />
+        )
+    }
+
+    render() {
+        const _this = this;
+        return (
+            <View  style={styles.container}>
+                <ScrollView>
+                    <View>
+                        {
+                            !this.state.isLoading ? (
+                                this.state.events.map(event => _this.renderItem.call(_this, event))
+                            ) : (
+                                <Text>Chargement</Text>
+                            )
+                        }
+                    </View>
+                </ScrollView>
+                <TouchableOpacity style={ styles.assignButton }>
+                    <Icon
+                        name='ios-checkmark'
+                        size={50}
+                        color='#fff'
+                    />
+                </TouchableOpacity>
+            </View>
         );
     }
 }
@@ -73,4 +88,20 @@ const styles = StyleSheet.create({
         paddingTop: 30,
         backgroundColor: '#efeff4',
     },
+    assignButton: {
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        width: 50,
+        height: 50,
+        borderRadius: 50,
+        backgroundColor: '#27ae60',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#333',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 1,
+    }
 });
