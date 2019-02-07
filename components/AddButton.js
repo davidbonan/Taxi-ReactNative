@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet} from "react-native";
-import { Icon } from 'react-native-ios-kit';
+import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 
 import Colors from '../constants/Colors';

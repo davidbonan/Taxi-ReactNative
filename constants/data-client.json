@@ -1,7 +1,7 @@
 [
-    {"id":1, "name": "Monique", "address": "10 rue Paul Valery, Sarcelles, 95200"},
-    {"id":2, "name": "Monique1", "address": "10 rue Paul Valery, Sarcelles, 95200"},
-    {"id":3, "name": "Monique2", "address": "10 rue Paul Valery, Sarcelles, 95200"},
-    {"id":4, "name": "Monique3", "address": "10 rue Paul Valery, Sarcelles, 95200"},
+    {"id":1, "name": "Monique", "address": "10 rue Paul Valery, Sarcelles, 95200", "caisse": "MGEN"},
+    {"id":2, "name": "Monique1", "address": "10 rue Paul Valery, Sarcelles, 95200", "caisse": "Bretagne"},
+    {"id":3, "name": "Monique2", "address": "10 rue Paul Valery, Sarcelles, 95200", "caisse": "General"},
+    {"id":4, "name": "Monique3", "address": "10 rue Paul Valery, Sarcelles, 95200", "caisse": "MACIF"},
     {"id":2, "name": "David", "address": "10 rue Paul Valery, Sarcelles, 95200"}
 ]

@@ -4,13 +4,17 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "ios": "react-native run-ios --simulator='iPhone 8'"
   },
   "dependencies": {
-    "react": "16.6.3",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.23",
+    "react": "^16.6.3",
     "react-native": "0.58.4",
     "react-native-add-calendar-event": "^2.3.0",
     "react-native-autocomplete-input": "^3.6.0",
+    "react-native-contacts": "^3.1.2",
     "react-native-gesture-handler": "^1.0.15",
     "react-native-ios-kit": "0.0.7",
     "react-native-keyboard-aware-scroll-view": "^0.8.0",

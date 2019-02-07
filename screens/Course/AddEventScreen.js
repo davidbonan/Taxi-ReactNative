@@ -4,8 +4,10 @@ import AutocompleteClient from '../../components/AutocompleteClient';
 import { Button, TableView, TextFieldRow, CheckboxRow } from 'react-native-ios-kit';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
+import moment from 'moment';
+import Contacts from 'react-native-contacts';
 
-export default class SelectClientScreen extends React.Component {
+export default class AddEventScreen extends React.Component {
 
   constructor(props) {
     super(props)
@@ -19,8 +21,10 @@ export default class SelectClientScreen extends React.Component {
       typeRdv: '',
       bonToReceipt: false,
       bon: false,
-      bonFor: ''
-
+      bonFor: '',
+      makeStart: true,
+      makeEnd: true,
+      caisse: ''
     }
   }
 
@@ -28,7 +32,8 @@ export default class SelectClientScreen extends React.Component {
     this.setState({
       idClient : client.id,
       name: client.name,
-      addressStart: client.address
+      addressStart: client.address,
+      caisse: client.caisse
     })
   }
 
@@ -39,9 +44,33 @@ export default class SelectClientScreen extends React.Component {
   }
 
   handleSubmit () {
+    let title = {
+      date: moment(this.state.datetimeStart).format("HH[h]mm"),
+      name: this.state.name,
+      adrStart: this.state.addressStart,
+      adrEnd: this.state.addressEnd,
+      type: this.state.typeRdv,
+      caisse: this.state.caisse,
+      makeStart: this.state.makeStart ? "Aller"  : "",
+      makeEnd: this.state.makeEnd ? "Retour"  : "",
+      bonToReceipt: this.state.bonToReceipt ? "Bon à récupérer"  : ""
+    }
+    let concatTitle = title.date + 
+                      " " + title.adrStart + 
+                      " pour " + title.adrEnd + 
+                      " " + title.type + 
+                      " " + title.makeStart + 
+                      " " + title.makeEnd + 
+                      " " + title.name + 
+                      " " + title.caisse;
+                      " " + title.bonToReceipt;
+
     const eventConfig = {
-      title: this.state.name,
-      // and other options
+      title: concatTitle,
+      startDate: moment(this.state.datetimeStart).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+      endDate: moment(this.state.datetimeStart).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+      location: this.state.bon ? "Bon " + this.state.bonFor : "",
+      notes: "Généré par MyTaxis {test}"
     };
     AddCalendarEvent.presentEventCreatingDialog(eventConfig)
     .then((eventInfo) => {
@@ -61,6 +90,7 @@ export default class SelectClientScreen extends React.Component {
   }
 
   render() {
+    
     return (
       <KeyboardAwareScrollView style={{backgroundColor: '#efeff4'}}>
         <ScrollView style={styles.container}>
@@ -88,6 +118,7 @@ export default class SelectClientScreen extends React.Component {
             <DatePickerIOS
               style={{backgroundColor: '#fff'}}
               date={this.state.datetimeStart}
+              onDateChange={date => this.setState({ datetimeStart: date })}
             />
             <CheckboxRow
               selected={this.state.bonToReceipt}

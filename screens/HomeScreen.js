@@ -19,7 +19,7 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container} >
-          <AddButton backgroundColor='blue' routeName='SelectClient' navigateTo={this.navigateTo.bind(this)} />
+          <AddButton backgroundColor='blue' routeName='AddEvent' navigateTo={this.navigateTo.bind(this)} />
       </View>
     );
   }

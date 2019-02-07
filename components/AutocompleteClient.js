@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet, Text, View} from "react-native";
 import Autocomplete from 'react-native-autocomplete-input';
-import { Icon } from 'react-native-ios-kit';
+import { Icon } from 'react-native-vector-icons';
 
 import Colors from '../constants/Colors';
 import data from '../constants/data-client.json'
@@ -53,9 +53,9 @@ export default class AutocompleteClient extends React.Component {
                 <Autocomplete
                     data={clients.length === 1 && comp(query, clients[0].name) ? [] : clients}
                     defaultValue={query}
-                    //hideResults={this.state.hideResults}
                     keyboardShouldPersistTaps="always"
                     autoCorrect={false}
+                    hideResults={this.state.hideResults}
                     containerStyle={styles.autocompleteContainer}
                     placeholder="Entrer le nom d'un client"
                     inputContainerStyle={styles.autocompleteInputContainer}
