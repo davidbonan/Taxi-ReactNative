@@ -7,7 +7,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import AddEventScreen from '../screens/Course/AddEventScreen';
 
-import LinksScreen from '../screens/LinksScreen';
+import SelectAssignationCoursesScreen from '../screens/SelectAssignationCoursesScreen';
 
 const HomeStack = createStackNavigator({
   Home: {
@@ -38,12 +38,12 @@ HomeStack.navigationOptions = {
   )
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
+const SelectAssignationCoursesStack = createStackNavigator({
+  SelectAssignationCourses: SelectAssignationCoursesScreen,
 });
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Clients',
+SelectAssignationCoursesStack.navigationOptions = {
+  tabBarLabel: 'Assignation',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -54,5 +54,5 @@ LinksStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   HomeStack,
-  LinksStack
+  SelectAssignationCoursesStack
 });
