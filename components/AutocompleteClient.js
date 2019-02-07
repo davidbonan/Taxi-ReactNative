@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet, Text, View} from "react-native";
 import Autocomplete from 'react-native-autocomplete-input';
-import { Icon } from 'react-native-vector-icons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import Colors from '../constants/Colors';
 import data from '../constants/data-client.json'
