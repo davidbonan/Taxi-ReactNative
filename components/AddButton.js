@@ -19,7 +19,6 @@ export default class AddButton extends React.Component {
         return (
             <TouchableOpacity
                 onPress={() => navigateTo(routeName)}
-                //style={[{backgroundColor: this.state.backgroundColor}]} 
             >
                 <LinearGradient
                     colors={['#57c1fb', '#1c84e5']}
