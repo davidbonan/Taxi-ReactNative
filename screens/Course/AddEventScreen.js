@@ -29,11 +29,18 @@ export default class AddEventScreen extends React.Component {
   }
 
   handleSelectClient (client) {
+    let address = "";
+    if(client.postalAddresses.length > 0) {
+      address = client.postalAddresses[0].street + ' ' +
+                client.postalAddresses[0].city + ' ' +
+                client.postalAddresses[0].postCode
+    }
+    
     this.setState({
-      idClient : client.id,
-      name: client.name,
-      addressStart: client.address,
-      caisse: client.caisse
+      idClient : client.recordID,
+      name: client.familyName + ' ' + client.givenName,
+      addressStart: address,
+      caisse: client.company
     })
   }
 
@@ -89,6 +96,14 @@ export default class AddEventScreen extends React.Component {
     //navigate("Home");
   }
 
+  handleAddClient() {
+    let _this = this;
+    Contacts.openContactForm({company: 'Caisse générale'}, (err, contact) => {
+      if (err) throw err;
+      _this.handleSelectClient(contact)
+    })
+  }
+
   render() {
     
     return (
@@ -98,6 +113,11 @@ export default class AddEventScreen extends React.Component {
             <AutocompleteClient handleSelectClient={ this.handleSelectClient.bind(this) }
                                 handleChangeText={ this.handleChangeText.bind(this) }
             />
+          </View>
+          <View style={styles.newClientContainer}>
+            <Button onPress={this.handleAddClient.bind(this)}>
+              Nouveau client ?
+            </Button>
           </View>
           <TableView header="Course" >
             <TextFieldRow
@@ -119,6 +139,29 @@ export default class AddEventScreen extends React.Component {
               style={{backgroundColor: '#fff'}}
               date={this.state.datetimeStart}
               onDateChange={date => this.setState({ datetimeStart: date })}
+            />
+            <CheckboxRow
+              selected={this.state.makeStart}
+              onPress={() =>
+                this.setState(state => ({
+                  makeStart: !state.makeStart,
+                }))
+              }
+              title='Aller'
+            />
+            <CheckboxRow
+              selected={this.state.makeEnd}
+              onPress={() =>
+                this.setState(state => ({
+                  makeEnd: !state.makeEnd,
+                }))
+              }
+              title='Retour'
+            />
+            <TextFieldRow
+              placeholder="Type de Rendez-vous"
+              value={this.state.typeRdv}
+              onValueChange={text => this.setState({ typeRdv: text })}
             />
             <CheckboxRow
               selected={this.state.bonToReceipt}
@@ -174,5 +217,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     margin: 10
+  },
+  newClientContainer: {
+    margin: 10,
   }
 });

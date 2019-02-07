@@ -2,9 +2,7 @@ import React from "react";
 import { TouchableOpacity, StyleSheet, Text, View} from "react-native";
 import Autocomplete from 'react-native-autocomplete-input';
 import Icon from 'react-native-vector-icons/Ionicons';
-
-import Colors from '../constants/Colors';
-import data from '../constants/data-client.json'
+import Contacts from 'react-native-contacts';
 
 export default class AutocompleteClient extends React.Component {
     constructor(props) {
@@ -12,8 +10,37 @@ export default class AutocompleteClient extends React.Component {
         
         this.state = {
             query: '',
-            hideResults: true
+            hideResults: true,
+            clients: []
         }
+    }
+
+    componentDidMount() {
+        Contacts.checkPermission((err, permission) => {
+            if (err) throw err;
+            if (permission === 'undefined') {
+                Contacts.requestPermission((err, permission) => {
+                    if (err) throw err;
+                    if (permission === 'authorized') {
+                        this.updateListClients();
+                    }
+                })
+            }
+            if (permission === 'authorized') {
+                this.updateListClients();
+            }
+        })
+    }
+
+    updateListClients() {
+        let _this = this;
+        Contacts.getAll((err, contacts) => {
+            if (err) {
+              throw err;
+            }
+            // contacts returned
+            _this.setState({ clients: contacts })
+        })
     }
 
     findClients(query) {
@@ -21,8 +48,8 @@ export default class AutocompleteClient extends React.Component {
             return [];
         }
 
-        const regex = new RegExp(`${query.trim()}`, 'i');
-        return data.filter(client => client.name.search(regex) >= 0);
+        const regex = new RegExp(`${query}`, 'i');
+        return this.state.clients.filter(client => client.familyName.search(regex) >= 0 || client.givenName.search(regex) >= 0);
     }
 
     handleChangeText (text) {
@@ -51,7 +78,7 @@ export default class AutocompleteClient extends React.Component {
                     color='#333'
                 />
                 <Autocomplete
-                    data={clients.length === 1 && comp(query, clients[0].name) ? [] : clients}
+                    data={clients.length === 1 && (comp(query, clients[0].familyName) || comp(query, clients[0].givenName)) ? [] : clients}
                     defaultValue={query}
                     keyboardShouldPersistTaps="always"
                     autoCorrect={false}
@@ -64,8 +91,18 @@ export default class AutocompleteClient extends React.Component {
                     onChangeText={this.handleChangeText.bind(this)}
                     renderItem={item => (
                     <TouchableOpacity style={styles.itemContainer} onPress={this.handleSelectClient.bind(this, item)}>
-                        <Text style={styles.itemText}>{item.name}</Text>
-                        <Text style={styles.adrText}>{item.address}</Text>
+                        <Text style={styles.itemText}>{ item.givenName + item.familyName }</Text>
+                        {
+                            item.postalAddresses.length > 0 ? (
+                                <Text style={styles.adrText}>{ 
+                                    item.postalAddresses[0].street + ' ' +
+                                    item.postalAddresses[0].city + ' ' +
+                                    item.postalAddresses[0].postCode
+                                }</Text>
+                            ) : (
+                                <Text style={styles.adrText}>Aucune adresse</Text>
+                            )
+                        }
                     </TouchableOpacity>
                     )}
                 />
