@@ -3,6 +3,7 @@ package com.mytaxis;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.calendarevents.CalendarEventsPackage;
 import com.tkporter.sendsms.SendSMSPackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 import com.vonovak.AddCalendarEventPackage;
@@ -28,6 +29,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new CalendarEventsPackage(),
             SendSMSPackage.getInstance(),
             new ReactNativeContacts(),
             new AddCalendarEventPackage(),
