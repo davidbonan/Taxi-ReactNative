@@ -88,14 +88,13 @@ export default class AddEventScreen extends React.Component {
       // On Android, where they are both equal and represent the event id, also strings.
       // when { action: 'CANCELED' } is returned, the dialog was dismissed
       console.warn(JSON.stringify(eventInfo));
+      const {navigate} = this.props.navigation;
+      navigate("Home");
     })
     .catch((error) => {
       // handle error such as when user rejected permissions
       console.warn(error);
     });
-
-    //const {navigate} = this.props.navigation;
-    //navigate("Home");
   }
 
   handleAddClient() {
