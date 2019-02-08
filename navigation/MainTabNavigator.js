@@ -10,6 +10,7 @@ import AddEventScreen from '../screens/AddEventScreen';
 import SelectAssignationCoursesScreen from '../screens/SelectAssignationCoursesScreen';
 
 import SelectBonCoursesScreen from '../screens/SelectBonCoursesScreen';
+import GroupBonCoursesScreen from '../screens/GroupBonCoursesScreen';
 
 const HomeStack = createStackNavigator({
   Home: {
@@ -41,7 +42,12 @@ HomeStack.navigationOptions = {
 };
 
 const SelectAssignationCoursesStack = createStackNavigator({
-  SelectAssignationCourses: SelectAssignationCoursesScreen,
+  SelectAssignationCourses: {
+    screen: SelectAssignationCoursesScreen,
+    navigationOptions: ({ navigation }) => ({
+      header: null,
+    }),
+  },
 });
 
 SelectAssignationCoursesStack.navigationOptions = {
@@ -55,7 +61,18 @@ SelectAssignationCoursesStack.navigationOptions = {
 };
 
 const SelectBonCoursesStack = createStackNavigator({
-  SelectBonCourses: SelectBonCoursesScreen,
+  SelectBonCourses: {
+    screen: SelectBonCoursesScreen,
+    navigationOptions: ({ navigation }) => ({
+      header: null,
+    }),
+  },
+  GroupBonCourses: {
+    screen: GroupBonCoursesScreen,
+    navigationOptions : {
+      title: 'Grouper les courses'
+    }
+  }
 });
 
 SelectBonCoursesStack.navigationOptions = {

@@ -1,58 +1,57 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { SearchBar } from 'react-native-elements';
+import { ScrollView, StyleSheet, View, Text } from 'react-native';
 import { Button } from 'react-native-ios-kit';
 import moment from 'moment';
 import localFR from '../constants/MomentI8n';
 import RNCalendarEvents from 'react-native-calendar-events';
 import ItemCalendar from '../components/ItemCalendar';
-import LoadingLabel from '../components/LoadingLabel';
+import Prompt from 'rn-prompt';
 
-moment.locale('fr', localFR);
-
-let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
-
-export default class SelectBonCoursesScreenScreen extends React.Component {
-    static navigationOptions = {
-        header: null,
-    };
+export default class GroupBonCoursesScreen extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            query: "",
-            isLoading: false,
-            events: [],
-            eventsSelected: []
+            events: this.props.navigation.getParam('events', []), 
+            eventsSelected: [],
+            groupedEvents: [],
+            promptVisible: false
         }
     }
 
-    handleChangeQuery(query) {
-        this.setState({ query: query });
-        if( query.length > 2 ) {
-            this.setState({ isLoading: true })
-            this.updateEventsList();
-        } else {
-            this.setState({ isLoading: false, events: [] })
-        }
-    }
-
-    updateEventsList() {
-        let startDate = moment(new Date()).subtract('120', 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-        let endDate = moment(new Date()).add(120, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-        let _this = this;
-        RNCalendarEvents.authorizeEventStore().then(() => {
-            RNCalendarEvents.fetchAllEvents(startDate, endDate).then(fulfilled => {
-                const regex = new RegExp(`${_this.state.query}`, 'i');
-                events = fulfilled.filter(event => event.location.search(regex) >= 0)
-                if(fulfilled.length > 0) {
-                    _this.setState({ isLoading: false, events: events});
-                } else {
-                    _this.setState({ isLoading: false, events: [] });
+    getEventsWithoutEventsSelected(events, eventsSelected) {
+        let arr = events.filter(e => {
+            for(let i = 0; i < eventsSelected.length; i++ ) {
+                let eventSelected = eventsSelected[i];
+                if(eventSelected.id == e.id) {
+                    return false;
                 }
-            })
-        })
+            }
+        });
+        return arr;
+    }
+
+    handleGroupEvents(clientName) {
+        const _this = this;
+        let groupedEvents = [
+            ...this.groupedEvents,
+            {
+                clientName: clientName,
+                events: this.state.eventsSelected
+            }
+        ]
+        this.setState({ 
+            events: _this.getEventsWithoutEventsSelected(_this.state.events, _this.state.eventSelected),
+            promptVisible: false,
+            groupedEvents: groupedEvents,
+            eventsSelected: [],
+         });
+         console.warn(this.state.groupedEvents);
+    }
+
+    handleValidateGroupEvents() {
+        this.setState({ promptVisible: true })
     }
 
     handleSelectItem(event) {
@@ -83,11 +82,6 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
             return v
         });
         this.setState({ events: events });
-    }
-
-    handleValidate() {
-        const {navigate} = this.props.navigation;
-        navigate("GroupBonCourses", { events: this.state.eventsSelected });
     }
 
     renderItem(event, i, events) {
@@ -121,38 +115,29 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
         const _this = this;
         return (
             <View style={styles.container}>
-                <View style={styles.searchbarContainer}>
-                    <SearchBar
-                        placeholder="Rechercher les bons"
-                        value={this.state.query}
-                        onChangeText={ this.handleChangeQuery.bind(this) }
-                        showLoading={this.state.isLoading}
-                        round={true}
-                        lightTheme={true}
-                        containerStyle={styles.searchBar}
-                        inputContainerStyle={styles.inputContainer}
-                        cancelButtonTitle="Annuler"
-                    />
-                </View>
                 <ScrollView>
                     <View>
                         {
-                            !this.state.isLoading ? (
-                                this.state.events.map((event, i, events) => _this.renderItem.call(_this, event, i, events))
-                            ) : (
-                                <LoadingLabel />
-                            )
+                            this.state.events.map((event, i, events) => _this.renderItem.call(_this, event, i, events))
                         }
                     </View>
                 </ScrollView>
+                <Prompt
+                    title="Nom du client"
+                    visible={ this.state.promptVisible }
+                    onCancel={ () => this.setState({
+                        promptVisible: false
+                    }) }
+                    onSubmit={ this.handleGroupEvents.bind(this)  }
+                />
                 {
                     this.state.eventsSelected.length > 0 ? (
                         <View style={styles.containerValidateButton}>
                             <Button 
-                                onPress={ this.handleValidate.bind(this) }
+                                onPress={ this.handleValidateGroupEvents.bind(this) }
                                 inverted rounded
                             >
-                                Valider
+                                Grouper
                             </Button>
                         </View>
                     ) : (
@@ -167,21 +152,8 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 0,
+        paddingTop: 15,
         backgroundColor: '#efeff4',
-    },
-    searchbarContainer: {
-        paddingTop: 25,
-        paddingBottom: 0,
-        backgroundColor: '#fff',
-        borderBottomWidth: 1,
-        borderBottomColor: '#D1D1D1'
-    },
-    searchBar: {
-        backgroundColor: '#ffffff'
-    },
-    inputContainer: {
-        backgroundColor: '#efeff4'
     },
     date: {
         marginTop: 25,
