@@ -29,8 +29,10 @@ export default class AddEventScreen extends React.Component {
   }
 
   handleSelectClient (client) {
+    if(!client)
+        return;
     let address = "";
-    if(client.postalAddresses.length > 0) {
+    if(client.postalAddresses && client.postalAddresses.length > 0) {
       address = client.postalAddresses[0].street + ' ' +
                 client.postalAddresses[0].city + ' ' +
                 client.postalAddresses[0].postCode
