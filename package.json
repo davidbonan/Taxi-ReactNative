@@ -17,6 +17,7 @@
     "react-native-autocomplete-input": "^3.6.0",
     "react-native-calendar-events": "^1.6.4",
     "react-native-contacts": "^3.1.2",
+    "react-native-elements": "^1.0.0",
     "react-native-gesture-handler": "^1.0.15",
     "react-native-ios-kit": "0.0.7",
     "react-native-keyboard-aware-scroll-view": "^0.8.0",

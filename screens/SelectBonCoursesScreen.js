@@ -1,14 +1,15 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, Text } from 'react-native';
-import { SearchBar } from 'react-native-ios-kit';
+import { SearchBar } from 'react-native-elements';
 import moment from 'moment';
 import localFR from '../constants/MomentI8n';
 import RNCalendarEvents from 'react-native-calendar-events';
 import ItemCalendar from '../components/ItemCalendar';
+import LoadingLabel from '../components/LoadingLabel';
 
 moment.locale('fr', localFR);
 
-let lastDate = moment(new Date()).subtract(30, 'years').format("YYYYMMDD");
+let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
 
 export default class SelectBonCoursesScreenScreen extends React.Component {
     static navigationOptions = {
@@ -37,8 +38,8 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
     }
 
     updateEventsList() {
-        let startDate = moment(new Date()).subtract('30', 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-        let endDate = moment(new Date()).add(10, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+        let startDate = moment(new Date()).subtract('120', 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+        let endDate = moment(new Date()).add(120, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let _this = this;
         RNCalendarEvents.authorizeEventStore().then(() => {
             RNCalendarEvents.fetchAllEvents(startDate, endDate).then(fulfilled => {
@@ -77,7 +78,7 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
 
     renderItem(event, i, events) {
         if(i == 0) {
-            lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
+            lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
         }
         const date = (
             <Text key={ event.id + '_01' } style={ styles.date } >
@@ -109,10 +110,14 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
                 <View style={styles.searchbarContainer}>
                     <SearchBar
                         placeholder="Rechercher les bons"
-                        value={this.state.text}
-                        onValueChange={ this.handlerChangeQuery.bind(this) }
-                        withCancel
-                        animated
+                        value={this.state.query}
+                        onChangeText={ this.handlerChangeQuery.bind(this) }
+                        showLoading={this.state.isLoading}
+                        round={true}
+                        lightTheme={true}
+                        containerStyle={styles.searchBar}
+                        inputContainerStyle={styles.inputContainer}
+                        cancelButtonTitle="Annuler"
                     />
                 </View>
                 <ScrollView>
@@ -121,7 +126,7 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
                             !this.state.isLoading ? (
                                 this.state.events.map((event, i, events) => _this.renderItem.call(_this, event, i, events))
                             ) : (
-                                <Text>Chargement</Text>
+                                <LoadingLabel />
                             )
                         }
                     </View>
@@ -143,6 +148,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#D1D1D1'
+    },
+    searchBar: {
+        backgroundColor: '#ffffff'
+    },
+    inputContainer: {
+        backgroundColor: '#efeff4'
     },
     date: {
         marginTop: 25,
