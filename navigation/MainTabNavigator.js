@@ -5,7 +5,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 import TabBarIcon from '../components/TabBarIcon';
 
 import HomeScreen from '../screens/HomeScreen';
-import AddEventScreen from '../screens/Course/AddEventScreen';
+import AddEventScreen from '../screens/AddEventScreen';
 
 import SelectAssignationCoursesScreen from '../screens/SelectAssignationCoursesScreen';
 

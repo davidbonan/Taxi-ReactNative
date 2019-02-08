@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, DatePickerIOS, Alert, View } from 'react-native';
-import AutocompleteClient from '../../components/AutocompleteClient';
+import AutocompleteClient from '../components/AutocompleteClient';
 import { Button, TableView, TextFieldRow, CheckboxRow } from 'react-native-ios-kit';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
