@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, DatePickerIOS, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, DatePickerIOS, Alert, View } from 'react-native';
 import AutocompleteClient from '../../components/AutocompleteClient';
 import { Button, TableView, TextFieldRow, CheckboxRow } from 'react-native-ios-kit';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -76,8 +76,8 @@ export default class AddEventScreen extends React.Component {
 
     const eventConfig = {
       title: concatTitle,
-      startDate: moment(this.state.datetimeStart).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
-      endDate: moment(this.state.datetimeStart).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+      startDate: moment(this.state.datetimeStart).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+      endDate: moment(this.state.datetimeStart).utc().add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
       location: this.state.bon ? "Bon " + this.state.bonFor : "",
       notes: "Généré par MyTaxis {test}"
     };
@@ -87,13 +87,16 @@ export default class AddEventScreen extends React.Component {
       // These are two different identifiers on iOS.
       // On Android, where they are both equal and represent the event id, also strings.
       // when { action: 'CANCELED' } is returned, the dialog was dismissed
-      console.warn(JSON.stringify(eventInfo));
-      const {navigate} = this.props.navigation;
-      navigate("Home");
+      //console.warn(JSON.stringify(eventInfo));
+      if(eventInfo.action != 'CANCELED') {
+        const {navigate} = this.props.navigation;
+        navigate("Home");
+      }      
     })
     .catch((error) => {
       // handle error such as when user rejected permissions
       console.warn(error);
+      Alert.alert("Problème lors de l'enregistrement", "Un problème est survenu lors de l'enregistrement de la course.")
     });
   }
 
