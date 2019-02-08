@@ -9,6 +9,8 @@ import AddEventScreen from '../screens/Course/AddEventScreen';
 
 import SelectAssignationCoursesScreen from '../screens/SelectAssignationCoursesScreen';
 
+import SelectBonCoursesScreen from '../screens/SelectBonCoursesScreen';
+
 const HomeStack = createStackNavigator({
   Home: {
     screen: HomeScreen,
@@ -52,7 +54,22 @@ SelectAssignationCoursesStack.navigationOptions = {
   ),
 };
 
+const SelectBonCoursesStack = createStackNavigator({
+  SelectBonCourses: SelectBonCoursesScreen,
+});
+
+SelectBonCoursesStack.navigationOptions = {
+  tabBarLabel: 'Bon',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === 'ios' ? 'ios-copy' : 'md-copy'}
+    />
+  ),
+};
+
 export default createBottomTabNavigator({
   HomeStack,
-  SelectAssignationCoursesStack
+  SelectAssignationCoursesStack,
+  SelectBonCoursesStack
 });

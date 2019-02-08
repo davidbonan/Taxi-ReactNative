@@ -39,7 +39,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
     }
 
     refreshEvents() {
-        let startDate = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+        let startDate = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let endDate = moment(new Date()).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let _this = this;
         RNCalendarEvents.authorizeEventStore().then(() => {
