@@ -33,7 +33,9 @@ export default class ItemCalendar extends React.Component {
                         <Text style={styles.title}>
                             { title }
                         </Text>
-                        <Text style={styles.location}>test</Text>
+                        <Text style={styles.location}>
+                            { location }
+                        </Text>
                     </View>
                 </View>
             </TouchableOpacity>

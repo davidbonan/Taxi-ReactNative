@@ -57,7 +57,7 @@ export default class AddEventScreen extends React.Component {
       adrStart: this.state.addressStart,
       adrEnd: this.state.addressEnd,
       type: this.state.typeRdv,
-      caisse: this.state.caisse,
+      caisse: this.state.caisse ? "caisse " + this.state.caisse : "",
       makeStart: this.state.makeStart ? "Aller"  : "",
       makeEnd: this.state.makeEnd ? "Retour"  : "",
       bonToReceipt: this.state.bonToReceipt ? "Bon à récupérer"  : ""
@@ -69,7 +69,7 @@ export default class AddEventScreen extends React.Component {
                       " " + title.makeStart + 
                       " " + title.makeEnd + 
                       " " + title.name + 
-                      " " + title.caisse;
+                      " " + title.caisse +
                       " " + title.bonToReceipt;
 
     const eventConfig = {
@@ -98,7 +98,7 @@ export default class AddEventScreen extends React.Component {
 
   handleAddClient() {
     let _this = this;
-    Contacts.openContactForm({company: 'Caisse générale'}, (err, contact) => {
+    Contacts.openContactForm({company: 'Générale'}, (err, contact) => {
       if (err) throw err;
       _this.handleSelectClient(contact)
     })
@@ -162,6 +162,11 @@ export default class AddEventScreen extends React.Component {
               placeholder="Type de Rendez-vous"
               value={this.state.typeRdv}
               onValueChange={text => this.setState({ typeRdv: text })}
+            />
+            <TextFieldRow
+              placeholder="Type de caisse"
+              value={this.state.caisse}
+              onValueChange={text => this.setState({ caisse: text })}
             />
             <CheckboxRow
               selected={this.state.bonToReceipt}
