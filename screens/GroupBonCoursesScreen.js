@@ -20,34 +20,35 @@ export default class GroupBonCoursesScreen extends React.Component {
         }
     }
 
-    getEventsWithoutEventsSelected(events, eventsSelected) {
-        let arr = events.filter(e => {
-            for(let i = 0; i < eventsSelected.length; i++ ) {
-                let eventSelected = eventsSelected[i];
-                if(eventSelected.id == e.id) {
+    getEventsWithoutEventsSelected() {
+        const _this = this;
+        let arr = this.state.events.filter(e => {
+            for(let i = 0; i < _this.state.eventsSelected.length; i++ ) {
+                let eventSelected = _this.state.eventsSelected[i];
+                if(eventSelected.id == e.id && eventSelected.startDate == e.startDate) {
                     return false;
                 }
             }
+            return true;
         });
         return arr;
     }
 
     handleGroupEvents(clientName) {
-        const _this = this;
         let groupedEvents = [
-            ...this.groupedEvents,
+            ...this.state.groupedEvents,
             {
                 clientName: clientName,
                 events: this.state.eventsSelected
             }
         ]
+        
         this.setState({ 
-            events: _this.getEventsWithoutEventsSelected(_this.state.events, _this.state.eventSelected),
+            events: this.getEventsWithoutEventsSelected(),
             promptVisible: false,
             groupedEvents: groupedEvents,
             eventsSelected: [],
          });
-         console.warn(this.state.groupedEvents);
     }
 
     handleValidateGroupEvents() {
@@ -56,49 +57,59 @@ export default class GroupBonCoursesScreen extends React.Component {
 
     handleSelectItem(event) {
         const _this = this;
-        let events = this.state.events.map(function(v) {
-            if(v.id === event.id) {
-                v.selected = !v.selected;
-                if(v.selected) {
-                    _this.setState({
-                        eventsSelected: [
-                            ..._this.state.eventsSelected, 
-                            {
-                                id: v.id, 
-                                title: v.title, 
-                                location: v.location,
-                                startDate: v.startDate
-                            }
-                        ]
-                    });
-                } else {
-                    let arrTmp = [..._this.state.eventsSelected];
-                    arrTmp = arrTmp.filter(e => e.id != v.id);
-                    _this.setState({
-                        eventsSelected: arrTmp
-                    });
-                }
+        let isSelected = false;
+        this.state.eventsSelected.map(es => {
+            if(es.id === event.id && es.startDate == event.startDate) {
+                isSelected = true
             }
-            return v
         });
-        this.setState({ events: events });
+        
+        if(isSelected) {
+            // We remove the event
+            let arrTmp = [...this.state.eventsSelected];
+            arrTmp = arrTmp.filter(es => event.id != es.id && event.startDate != es.startDate);
+            this.setState({
+                eventsSelected: arrTmp
+            });
+        } else {
+            // We add the event
+            this.setState({
+                eventsSelected: [
+                    ..._this.state.eventsSelected, 
+                    {
+                        id: event.id, 
+                        title: event.title, 
+                        location: event.location,
+                        startDate: event.startDate,
+                        endDate: event.endDate,
+                        isReccurent: event.isReccurent
+                    }
+                ]
+            });
+        }
     }
 
     renderItem(event, i, events) {
+        let isSelected = false;
+        this.state.eventsSelected.map(e => {
+            if(event.id == e.id && event.startDate == e.startDate) {
+                isSelected = true;
+            }
+        });
         if(i == 0) {
-            lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
+            lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
         }
         const date = (
             <Text key={ event.id + '_01' } style={ styles.date } >
-                { moment(event.startDate).format("DD MMMM") }
+                { moment(event.startDate).format("DD MMMM YYYY") }
             </Text>
         )
         const itemCalendar = (
-            <ItemCalendar key={ event.id } 
+            <ItemCalendar key={ event.id + event.startDate } 
                 title={event.title} 
                 location={ event.location }
                 startDate={ event.startDate }
-                selected={event.selected}
+                selected={ isSelected }
                 onPress={ this.handleSelectItem.bind(this, event) }
             />
         )

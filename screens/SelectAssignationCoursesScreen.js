@@ -1,12 +1,12 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert, RefreshControl, AlertIOS } from 'react-native';
 import RNCalendarEvents from 'react-native-calendar-events';
 import moment from 'moment';
 import ItemCalendar from '../components/ItemCalendar';
 import Icon from 'react-native-vector-icons/Ionicons';
 import localFR from '../constants/MomentI8n';
 import SendSMS from 'react-native-sms';
-import Prompt from 'rn-prompt';
+import LoadingLabel from '../components/LoadingLabel';
 
 moment.locale('fr', localFR);
 
@@ -22,25 +22,25 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         
         this.state = {
             isLoading: true,
-            promptVisible: false,
             refreshing: false,
             events: [],
             eventsSelected: []
         }
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.refreshEvents();
     }
 
     onRefreshList() {
-        this.setState({refreshing: true})
-        this.refreshEvents();
+        this.setState({refreshing: true, eventsSelected: []});
+        setTimeout(() => this.refreshEvents(), 500);
     }
 
     refreshEvents() {
-        let startDate = moment(new Date()).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-        let endDate = moment(new Date()).add(2, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+        let startDate = moment(new Date()).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+        let endDate = moment(new Date().setHours(0, 0, 0)).utc().add(2, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+
         let _this = this;
         RNCalendarEvents.authorizeEventStore().then(() => {
             RNCalendarEvents.fetchAllEvents(startDate, endDate).then(fulfilled => {
@@ -53,26 +53,23 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         })
     }
 
-    handlerSelectItem(event) {
+    handleValidateButton() {
         const _this = this;
-        let events = this.state.events.map(function(v) {
-            if(v.id === event.id) {
-                v.selected = !v.selected;
-                if(v.selected) {
-                    _this.setState({
-                        eventsSelected: [..._this.state.eventsSelected, {id: v.id, title: v.title, location: v.location}]
-                    });
-                } else {
-                    let arrTmp = [..._this.state.eventsSelected];
-                    arrTmp = arrTmp.filter(e => e.id != v.id);
-                    _this.setState({
-                        eventsSelected: arrTmp
-                    });
-                }
-            }
-            return v
-        });
-        this.setState({ events: events });
+        AlertIOS.prompt(
+            'Nom du chauffeur',
+            "Entrer le nom du chauffeur qui s'ajoutera à l'évenement",
+            [
+                {
+                  text: 'Cancel',
+                  style: 'cancel'
+                },
+                {
+                  text: 'OK',
+                  onPress: (text) => this.handleAssignButton.call(_this, text) ,
+                },
+            ],
+            'plain-text',
+          );
     }
 
     async handleAssignButton(taxiName) {
@@ -84,32 +81,87 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         SendSMS.send({
             body: body,
             recipients: ['0760558799'],
-            successTypes: ['sent', 'queued']
+            successTypes: ['sent', 'queue']
         }, (completed, cancelled, error) => {
             if(completed) {
-                this.setState({ promptVisible: false })
                 _this.updateEventsSelected(taxiName);
             } else if(error) {
-                Alert.alert("Problème lors de l'envoi", "Un problème est survenu lors de l'envoi du SMS.")
+                Alert.alert("Problème lors de l'envoi", "Un problème est survenu lors de l'envoi du SMS. Aucun SMS envoyés.")
             }
         });
     }
 
     async updateEventsSelected(taxiName) {
         for(let i = 0; i < this.state.eventsSelected.length; i++) {
-            let eventId = this.state.eventsSelected[i].id;
-            let eventTitle = this.state.eventsSelected[i].title;
-            let eventLocation = this.state.eventsSelected[i].location;
-            let value = {
-                id: eventId,
-                location: eventLocation + " " + taxiName
+            let event = this.state.eventsSelected[i];
+            let opt = {
+                exceptionDate: event.startDate, 
+                futureEvents: false
+            };
+            let values = {
+                startDate: event.startDate,
+                endDate: event.endDate,
+                location: event.location + " " + taxiName
             }
-            let response = await RNCalendarEvents.saveEvent(eventTitle, value);
+            try {
+                if(event.isReccurent) {
+                    let msg = await RNCalendarEvents.removeEvent(event.id, opt);
+                } else {
+                    values = {
+                        ...values,
+                        id: event.id
+                    }
+                }
+                let resp = await RNCalendarEvents.saveEvent(event.title, values, opt);
+            } catch (error) {
+                Alert.alert("Problème lors de la mise à jour de l'évenement", 
+                "Un problème est survenu lors de l'ajout du nom du chauffeur dans l'évenement, veuillez l'ajouter manuellement")
+            }
         }
         this.refreshEvents();
     }
 
+    handleSelectItem(event) {
+        const _this = this;
+        let isSelected = false;
+        this.state.eventsSelected.map(es => {
+            if(es.id === event.id && es.startDate == event.startDate) {
+                isSelected = true
+            }
+        });
+        
+        if(isSelected) {
+            // We remove the event
+            let arrTmp = [...this.state.eventsSelected];
+            arrTmp = arrTmp.filter(es => event.id != es.id && event.startDate != es.startDate);
+            this.setState({
+                eventsSelected: arrTmp
+            });
+        } else {
+            // We add the event
+            this.setState({
+                eventsSelected: [
+                    ..._this.state.eventsSelected, 
+                    {
+                        id: event.id, 
+                        title: event.title, 
+                        location: event.location,
+                        startDate: event.startDate,
+                        endDate: event.endDate,
+                        isReccurent: Number.isInteger(event.recurrenceRule.occurrence)
+                    }
+                ]
+            });
+        }
+    }
+
     renderItem(event, i, events) {
+        let isSelected = false;
+        this.state.eventsSelected.map(e => {
+            if(event.id == e.id && event.startDate == e.startDate) {
+                isSelected = true;
+            }
+        });
         if(i == 0) {
             lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
         }
@@ -119,12 +171,12 @@ export default class SelectAssignationCoursesScreen extends React.Component {
             </Text>
         )
         const itemCalendar = (
-            <ItemCalendar key={ event.id } 
+            <ItemCalendar key={ event.id + event.startDate } 
                 title={event.title} 
                 location={ event.location }
                 startDate={ event.startDate }
-                selected={event.selected}
-                onPress={ this.handlerSelectItem.bind(this, event) }
+                selected={ isSelected }
+                onPress={ this.handleSelectItem.bind(this, event) }
             />
         )
 
@@ -153,26 +205,18 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                             !this.state.isLoading ? (
                                 this.state.events.map((event, i, events) => _this.renderItem.call(_this, event, i, events))
                             ) : (
-                                <Text>Chargement</Text>
+                                <LoadingLabel />
                             )
                         }
                     </View>
                 </ScrollView>
-                <TouchableOpacity style={ styles.assignButton } onPress={ () => this.setState({ promptVisible: true }) }>
+                <TouchableOpacity style={ styles.assignButton } onPress={ this.handleValidateButton.bind(this) }>
                     <Icon
                         name='ios-checkmark'
                         size={50}
                         color='#fff'
                     />
                 </TouchableOpacity>
-                <Prompt
-                    title="Nom du chauffeur"
-                    visible={ this.state.promptVisible }
-                    onCancel={ () => this.setState({
-                        promptVisible: false
-                    }) }
-                    onSubmit={ this.handleAssignButton.bind(this)  }
-                />
             </View>
         );
     }
