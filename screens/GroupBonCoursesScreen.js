@@ -1,9 +1,9 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, AlertIOS, Linking, Button as ButtonNative } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, AlertIOS, Linking, Button as ButtonNative, Alert } from 'react-native';
 import { Button } from 'react-native-ios-kit';
+import { Calendar, Permissions } from 'expo';
 import moment from 'moment';
 import localFR from '../constants/MomentI8n';
-import RNCalendarEvents from 'react-native-calendar-events';
 import ItemCalendar from '../components/ItemCalendar';
 import _ from 'lodash';
 import update from 'immutability-helper';
@@ -17,7 +17,7 @@ export default class GroupBonCoursesScreen extends React.Component {
             headerTitle: 'Grouper les courses',
             headerRight: (
                 <ButtonNative
-                    onPress={() => state.params.handleSave()} 
+                    onPress={() => state.params.handleReset()} 
                     title="Reset"
                 />
             ),
@@ -35,7 +35,7 @@ export default class GroupBonCoursesScreen extends React.Component {
     }
 
     componentDidMount() {
-        this.props.navigation.setParams({ handleSave: () => this.resetState() })
+        this.props.navigation.setParams({ handleReset: () => this.resetState() })
     }
 
     resetState() {
@@ -125,7 +125,7 @@ export default class GroupBonCoursesScreen extends React.Component {
     }
 
     getFormatedBody() {
-        let body = "Bonjour Mme/Mr. xxxx, \nCi-dessous, les bons demandés : \n\n";
+        let body = "Bonjour Mme/Mr. xxxx, \nJe te fais la liste des bons. \n\n";
         let eventsIterative = [];
         this.state.groupedEvents.map(groupedEvent => {
             let previousDate = null;
@@ -140,27 +140,57 @@ export default class GroupBonCoursesScreen extends React.Component {
                     continue;
                 }
 
-                let currentDate = moment(event.startDate).utc();
+                let currentDate = moment(event.startDate);
                 if(previousDate && previousDate.format('YYYYMM') < currentDate.format('YYYYMM')) {
                     body = body.slice(0, -1);
-                    body += "-" + previousDate.format('MM') + "\n";
+                    body += "/" + previousDate.format('MM/YYYY') + "\n";
                 }
                 body += currentDate.format('DD') + '-';
                 previousDate = currentDate;
             }
             body = body.slice(0, -1);
-            body += "-" + previousDate.format('MM') + "\n\n";
+            body += "/" + previousDate.format('MM/YYYY') + "\n\n";
         });
 
         for (let i = 0; i < eventsIterative.length; i++) {
             const clientName = eventsIterative[i];
-            body += clientName + "\n35 courses\n\n";
+            body += '- ' + clientName + "\n35 courses\n\n";
         }
+        body += "\n\nMerci beaucoup"
         return body;
     }
 
-    removeMentionBon() {
+    async removeMentionBon() {
+        const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+        if (status !== 'granted') {
+            AlertIOS.alert('Vous devez authoriser l\'accès au calendrier');
+            return;
+        }
 
+        for(let i = 0; i < this.state.groupedEvents.length; i++) {
+            const events = this.state.groupedEvents[i].events;
+            for (let j = 0; j < events.length; j++) {
+                const event = events[j];
+                let newlocation = event.location.replace(new RegExp("bon", "ig"), '');
+                let opt = {
+                    instanceStartDate: event.startDate, 
+                    futureEvents: false
+                };
+                let values = {
+                    startDate: event.startDate,
+                    endDate: event.endDate,
+                    location: newlocation
+                }
+                try {
+                    let resp = await Calendar.updateEventAsync(event.id, values, opt);
+                } catch (error) {
+                    Alert.alert("Problème lors de la mise à jour de l'évenement", 
+                    "Un problème est survenu lors du retrait de la mention \"Bon\" dans l'évenement, veuillez le retirer manuellement")
+                }
+            }
+        }
+        const {navigate} = this.props.navigation;
+        navigate("SelectBonCourses", { refreshEvents: true });
     }
 
     handleSelectItem(event) {
@@ -251,8 +281,8 @@ export default class GroupBonCoursesScreen extends React.Component {
             <View style={styles.container}>
                 <ScrollView>
                     {
-                        this.state.groupedEvents.map(groupedEvent => {
-                            return <Text style={styles.groupedEvent} >{ groupedEvent.clientName + ' (' + groupedEvent.events.length + ')' }</Text>
+                        this.state.groupedEvents.map((groupedEvent, i) => {
+                            return <Text key={i} style={styles.groupedEvent} >{ groupedEvent.clientName + ' (' + groupedEvent.events.length + ')' }</Text>
                         })
                     }
                     {

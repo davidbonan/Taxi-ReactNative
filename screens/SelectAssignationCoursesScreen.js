@@ -1,11 +1,9 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert, RefreshControl, AlertIOS } from 'react-native';
-import RNCalendarEvents from 'react-native-calendar-events';
 import moment from 'moment';
 import ItemCalendar from '../components/ItemCalendar';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Icon, Calendar, SMS, Permissions } from 'expo';
 import localFR from '../constants/MomentI8n';
-import SendSMS from 'react-native-sms';
 import LoadingLabel from '../components/LoadingLabel';
 
 moment.locale('fr', localFR);
@@ -28,7 +26,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         }
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.refreshEvents();
     }
 
@@ -37,19 +35,22 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         setTimeout(() => this.refreshEvents(), 500);
     }
 
-    refreshEvents() {
+    async refreshEvents() {
+        const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+        if (status !== 'granted') {
+            AlertIOS.alert('Vous devez authoriser l\'accès au calendrier');
+        }
+
         let startDate = moment(new Date()).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let endDate = moment(new Date().setHours(0, 0, 0)).utc().add(2, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
 
         let _this = this;
-        RNCalendarEvents.authorizeEventStore().then(() => {
-            RNCalendarEvents.fetchAllEvents(startDate, endDate).then(fulfilled => {
-                if(fulfilled.length > 0) {
-                    _this.setState({ isLoading: false, events: fulfilled, refreshing: false });
-                } else {
-                    _this.setState({ isLoading: false, events: [], refreshing: false });
-                }
-            })
+        Calendar.getEventsAsync([Calendar.DEFAULT], startDate, endDate).then(fulfilled => {
+            if(fulfilled.length > 0) {
+                _this.setState({ isLoading: false, events: fulfilled, refreshing: false });
+            } else {
+                _this.setState({ isLoading: false, events: [], refreshing: false });
+            }
         })
     }
 
@@ -78,14 +79,11 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         this.state.eventsSelected.map(event => {
             body += event.title + "\n \n";
         });
-        SendSMS.send({
-            body: body,
-            recipients: ['0760558799'],
-            successTypes: ['sent', 'queue']
-        }, (completed, cancelled, error) => {
-            if(completed) {
+
+        SMS.sendSMSAsync("06", body).then( ({ result }) => {
+            if(result == 'sent') {
                 _this.updateEventsSelected(taxiName);
-            } else if(error) {
+            } else {
                 Alert.alert("Problème lors de l'envoi", "Un problème est survenu lors de l'envoi du SMS. Aucun SMS envoyés.")
             }
         });
@@ -95,7 +93,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         for(let i = 0; i < this.state.eventsSelected.length; i++) {
             let event = this.state.eventsSelected[i];
             let opt = {
-                exceptionDate: event.startDate, 
+                instanceStartDate: event.startDate, 
                 futureEvents: false
             };
             let values = {
@@ -104,20 +102,13 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                 location: event.location + " " + taxiName
             }
             try {
-                if(event.isReccurent) {
-                    let msg = await RNCalendarEvents.removeEvent(event.id, opt);
-                } else {
-                    values = {
-                        ...values,
-                        id: event.id
-                    }
-                }
-                let resp = await RNCalendarEvents.saveEvent(event.title, values, opt);
+                let resp = await Calendar.updateEventAsync(event.id, values, opt);
             } catch (error) {
                 Alert.alert("Problème lors de la mise à jour de l'évenement", 
                 "Un problème est survenu lors de l'ajout du nom du chauffeur dans l'évenement, veuillez l'ajouter manuellement")
             }
         }
+        this.setState({ eventsSelected: [] });
         this.refreshEvents();
     }
 
@@ -148,7 +139,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                         location: event.location,
                         startDate: event.startDate,
                         endDate: event.endDate,
-                        isReccurent: Number.isInteger(event.recurrenceRule.occurrence)
+                        isReccurent: event.recurrenceRule ? Number.isInteger(event.recurrenceRule.occurrence) : false
                     }
                 ]
             });
@@ -211,7 +202,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                     </View>
                 </ScrollView>
                 <TouchableOpacity style={ styles.assignButton } onPress={ this.handleValidateButton.bind(this) }>
-                    <Icon
+                    <Icon.Ionicons
                         name='ios-checkmark'
                         size={50}
                         color='#fff'

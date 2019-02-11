@@ -4,42 +4,10 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 
-import HomeScreen from '../screens/HomeScreen';
-import AddEventScreen from '../screens/AddEventScreen';
-
 import SelectAssignationCoursesScreen from '../screens/SelectAssignationCoursesScreen';
 
 import SelectBonCoursesScreen from '../screens/SelectBonCoursesScreen';
 import GroupBonCoursesScreen from '../screens/GroupBonCoursesScreen';
-
-const HomeStack = createStackNavigator({
-  Home: {
-    screen: HomeScreen,
-    navigationOptions: ({ navigation }) => ({
-      header: null,
-    }),
-  },
-  AddEvent: {
-    screen: AddEventScreen,
-    navigationOptions : {
-      title: 'Créer une course'
-    }
-  }
-});
-
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Courses',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? 'ios-car'
-          : 'md-car'
-      }
-    />
-  )
-};
 
 const SelectAssignationCoursesStack = createStackNavigator({
   SelectAssignationCourses: {
@@ -62,10 +30,7 @@ SelectAssignationCoursesStack.navigationOptions = {
 
 const SelectBonCoursesStack = createStackNavigator({
   SelectBonCourses: {
-    screen: SelectBonCoursesScreen,
-    navigationOptions: ({ navigation }) => ({
-      header: null,
-    }),
+    screen: SelectBonCoursesScreen
   },
   GroupBonCourses: {
     screen: GroupBonCoursesScreen
@@ -83,7 +48,6 @@ SelectBonCoursesStack.navigationOptions = {
 };
 
 export default createBottomTabNavigator({
-  HomeStack,
   SelectAssignationCoursesStack,
   SelectBonCoursesStack
 });
