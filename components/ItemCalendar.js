@@ -1,5 +1,6 @@
 import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Switch } from "react-native";
+import { CheckBox } from 'react-native-elements'
 
 export default class ItemCalendar extends React.Component {
     constructor(props) {
@@ -10,8 +11,15 @@ export default class ItemCalendar extends React.Component {
         }
     }
 
+    handleCheckIterative() {
+        const { onCheck } = this.props;
+        //this.setState({checked: !this.state.checked});
+        if(onCheck)
+            onCheck();
+    }
+
     render () {
-        const { title, location, selected, startDate } = this.props;
+        const { title, location, selected, enableSwitch, isChecked } = this.props;
 
         return (
             <TouchableOpacity {...this.props}>
@@ -36,6 +44,20 @@ export default class ItemCalendar extends React.Component {
                         <Text style={styles.location}>
                             { location }
                         </Text>
+                        {
+                            enableSwitch ? (
+                                <CheckBox
+                                    containerStyle={{ backgroundColor: '#fff', borderWidth: 0, margin: 0, padding: 0 }}
+                                    right
+                                    title='Course itérative'
+                                    checked={isChecked}
+                                    onPress={ this.handleCheckIterative.bind(this) }
+                                />
+                            ) : (
+                                <View></View>
+                            )
+                        }
+                        
                     </View>
                 </View>
             </TouchableOpacity>

@@ -68,10 +68,7 @@ const SelectBonCoursesStack = createStackNavigator({
     }),
   },
   GroupBonCourses: {
-    screen: GroupBonCoursesScreen,
-    navigationOptions : {
-      title: 'Grouper les courses'
-    }
+    screen: GroupBonCoursesScreen
   }
 });
 

@@ -60,7 +60,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
             "Entrer le nom du chauffeur qui s'ajoutera à l'évenement",
             [
                 {
-                  text: 'Cancel',
+                  text: 'Annuler',
                   style: 'cancel'
                 },
                 {

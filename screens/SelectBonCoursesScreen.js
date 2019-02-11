@@ -87,7 +87,8 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
                         location: event.location,
                         startDate: event.startDate,
                         endDate: event.endDate,
-                        isReccurent: Number.isInteger(event.recurrenceRule.occurrence)
+                        isReccurent: Number.isInteger(event.recurrenceRule.occurrence),
+                        isIterative: false
                     }
                 ]
             });

@@ -1,13 +1,28 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, AlertIOS, Linking, Button as ButtonNative } from 'react-native';
 import { Button } from 'react-native-ios-kit';
 import moment from 'moment';
 import localFR from '../constants/MomentI8n';
 import RNCalendarEvents from 'react-native-calendar-events';
 import ItemCalendar from '../components/ItemCalendar';
-import Prompt from 'rn-prompt';
+import _ from 'lodash';
+import update from 'immutability-helper';
+
+let lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
 
 export default class GroupBonCoursesScreen extends React.Component {
+    static navigationOptions = ({ navigation }) => {
+        const { state } = navigation;
+        return {
+            headerTitle: 'Grouper les courses',
+            headerRight: (
+                <ButtonNative
+                    onPress={() => state.params.handleSave()} 
+                    title="Reset"
+                />
+            ),
+        }
+    };
 
     constructor(props) {
         super(props);
@@ -15,9 +30,20 @@ export default class GroupBonCoursesScreen extends React.Component {
         this.state = {
             events: this.props.navigation.getParam('events', []), 
             eventsSelected: [],
-            groupedEvents: [],
-            promptVisible: false
+            groupedEvents: []
         }
+    }
+
+    componentDidMount() {
+        this.props.navigation.setParams({ handleSave: () => this.resetState() })
+    }
+
+    resetState() {
+        this.setState({
+            events: this.props.navigation.getParam('events', []), 
+            eventsSelected: [],
+            groupedEvents: []
+        })
     }
 
     getEventsWithoutEventsSelected() {
@@ -35,24 +61,106 @@ export default class GroupBonCoursesScreen extends React.Component {
     }
 
     handleGroupEvents(clientName) {
-        let groupedEvents = [
-            ...this.state.groupedEvents,
-            {
+        let clientExist = false;
+        let groupedEvents = [...this.state.groupedEvents];
+        for (let i = 0; i < groupedEvents.length; i++) {
+            let groupedEvent = groupedEvents[i];
+            if(groupedEvent.clientName == clientName) {
+                clientExist = true;
+                groupedEvent.events = groupedEvent.events.concat(this.state.eventsSelected)
+            }
+        }
+        if(!clientExist) {
+            groupedEvents.push({
                 clientName: clientName,
                 events: this.state.eventsSelected
-            }
-        ]
+            });
+        }
         
         this.setState({ 
             events: this.getEventsWithoutEventsSelected(),
-            promptVisible: false,
             groupedEvents: groupedEvents,
             eventsSelected: [],
          });
     }
 
     handleValidateGroupEvents() {
-        this.setState({ promptVisible: true })
+        const _this = this;
+        AlertIOS.prompt(
+            'Nom du client',
+            "Entrer le nom du client pour la préparation du mail.",
+            [
+                {
+                  text: 'Annuler',
+                  style: 'cancel'
+                },
+                {
+                  text: 'OK',
+                  onPress: (text) => this.handleGroupEvents.call(_this, text) ,
+                },
+            ],
+            'plain-text',
+          );
+    }
+
+    handleOpenMail() {
+        let body = encodeURI(this.getFormatedBody());
+        let subject = encodeURI("Demande de bons")
+        Linking.openURL('mailto:support@example.com?subject=' + subject + '&body=' + body);
+        AlertIOS.alert(
+            'Supprimer mention "Bon"',
+            'Voulez-vous supprimer la mention "Bon" des courses sélectionnées ?',
+            [
+                {
+                    text: 'Non',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                {
+                    text: 'Oui',
+                    onPress: () => this.removeMentionBon(),
+                },
+            ],
+        );
+    }
+
+    getFormatedBody() {
+        let body = "Bonjour Mme/Mr. xxxx, \nCi-dessous, les bons demandés : \n\n";
+        let eventsIterative = [];
+        this.state.groupedEvents.map(groupedEvent => {
+            let previousDate = null;
+            let events = _.sortBy([...groupedEvent.events], function(e) { return new moment(e.startDate); });
+            body += "- " + groupedEvent.clientName + "\n";
+
+            for (let i = 0; i < events.length; i++) {
+                const event = events[i];
+                
+                if(event.isIterative) {
+                    eventsIterative.push(groupedEvent.clientName);
+                    continue;
+                }
+
+                let currentDate = moment(event.startDate).utc();
+                if(previousDate && previousDate.format('YYYYMM') < currentDate.format('YYYYMM')) {
+                    body = body.slice(0, -1);
+                    body += "-" + previousDate.format('MM') + "\n";
+                }
+                body += currentDate.format('DD') + '-';
+                previousDate = currentDate;
+            }
+            body = body.slice(0, -1);
+            body += "-" + previousDate.format('MM') + "\n\n";
+        });
+
+        for (let i = 0; i < eventsIterative.length; i++) {
+            const clientName = eventsIterative[i];
+            body += clientName + "\n35 courses\n\n";
+        }
+        return body;
+    }
+
+    removeMentionBon() {
+
     }
 
     handleSelectItem(event) {
@@ -82,11 +190,23 @@ export default class GroupBonCoursesScreen extends React.Component {
                         location: event.location,
                         startDate: event.startDate,
                         endDate: event.endDate,
-                        isReccurent: event.isReccurent
+                        isReccurent: event.isReccurent,
+                        isIterative: event.isIterative
                     }
                 ]
             });
         }
+    }
+
+    handleCheckItem(event, index, isSelected) {
+        let eventsSelected = this.state.eventsSelected;
+        if(isSelected) {
+            eventsSelected = update(this.state.eventsSelected, {[index]: {isIterative: {$set: !event.isIterative}}})
+        }
+        this.setState({
+            events: update(this.state.events, {[index]: {isIterative: {$set: !event.isIterative}}}),
+            eventsSelected: eventsSelected
+        });
     }
 
     renderItem(event, i, events) {
@@ -107,10 +227,13 @@ export default class GroupBonCoursesScreen extends React.Component {
         const itemCalendar = (
             <ItemCalendar key={ event.id + event.startDate } 
                 title={event.title} 
+                enableSwitch={ true }
                 location={ event.location }
                 startDate={ event.startDate }
                 selected={ isSelected }
+                isChecked={ event.isIterative }
                 onPress={ this.handleSelectItem.bind(this, event) }
+                onCheck={ this.handleCheckItem.bind(this, event, i, isSelected) }
             />
         )
 
@@ -127,20 +250,31 @@ export default class GroupBonCoursesScreen extends React.Component {
         return (
             <View style={styles.container}>
                 <ScrollView>
+                    {
+                        this.state.groupedEvents.map(groupedEvent => {
+                            return <Text style={styles.groupedEvent} >{ groupedEvent.clientName + ' (' + groupedEvent.events.length + ')' }</Text>
+                        })
+                    }
+                    {
+                        this.state.groupedEvents.length > 0 ? (
+                            <View style={styles.containerValidateButton}>
+                                <Button 
+                                    onPress={ this.handleOpenMail.bind(this) }
+                                    inverted rounded
+                                >
+                                Préparer le mail
+                                </Button>
+                            </View>                            
+                        ) : (
+                            <View></View>
+                        )
+                    }
                     <View>
                         {
                             this.state.events.map((event, i, events) => _this.renderItem.call(_this, event, i, events))
                         }
                     </View>
                 </ScrollView>
-                <Prompt
-                    title="Nom du client"
-                    visible={ this.state.promptVisible }
-                    onCancel={ () => this.setState({
-                        promptVisible: false
-                    }) }
-                    onSubmit={ this.handleGroupEvents.bind(this)  }
-                />
                 {
                     this.state.eventsSelected.length > 0 ? (
                         <View style={styles.containerValidateButton}>
@@ -176,5 +310,9 @@ const styles = StyleSheet.create({
     },
     containerValidateButton: {
         margin: 10
+    },
+    groupedEvent: {
+        padding: 10,
+        backgroundColor: '#fff'
     }
 });
