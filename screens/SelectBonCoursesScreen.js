@@ -1,10 +1,10 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, Button as ButtonNative } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { Button } from 'react-native-ios-kit';
 import moment from 'moment';
 import localFR from '../constants/MomentI8n';
-import RNCalendarEvents from 'react-native-calendar-events';
+import { Calendar, Permissions } from 'expo';
 import ItemCalendar from '../components/ItemCalendar';
 import LoadingLabel from '../components/LoadingLabel';
 
@@ -13,8 +13,17 @@ moment.locale('fr', localFR);
 let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
 
 export default class SelectBonCoursesScreenScreen extends React.Component {
-    static navigationOptions = {
-        header: null,
+    static navigationOptions = ({ navigation }) => {
+        const { state } = navigation;
+        return {
+            headerTitle: 'Sélectionner les bons',
+            headerRight: (
+                <ButtonNative
+                    onPress={() => state.params.handleReset()} 
+                    title="Reset"
+                />
+            ),
+        }
     };
 
     constructor(props) {
@@ -28,6 +37,26 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
         }
     }
 
+    componentDidMount() {
+        this.props.navigation.setParams({ handleReset: () => this.resetState() });
+    }
+
+    componentDidUpdate() {
+        if(this.props.navigation.getParam('refreshEvents', false)) {
+            this.props.navigation.setParams({ refreshEvents: false});
+            this.updateEventsList();
+        }
+    }
+
+    resetState() {
+        this.setState({
+            query: "",
+            isLoading: false,
+            events: [],
+            eventsSelected: []
+        })
+    }
+
     handleChangeQuery(query) {
         this.setState({ query: query });
         if( query.length > 2 ) {
@@ -38,20 +67,23 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
         }
     }
 
-    updateEventsList() {
+    async updateEventsList() {
+        const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+        if (status !== 'granted') {
+            AlertIOS.alert('Vous devez authoriser l\'accès au calendrier');
+        }
+
         let startDate = moment(new Date()).subtract(120, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let endDate = moment(new Date()).add(120, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let _this = this;
-        RNCalendarEvents.authorizeEventStore().then(() => {
-            RNCalendarEvents.fetchAllEvents(startDate, endDate).then(fulfilled => {
-                const regex = new RegExp(`${_this.state.query}`, 'i');
-                events = fulfilled.filter(event => event.location.search(regex) >= 0)
-                if(fulfilled.length > 0) {
-                    _this.setState({ isLoading: false, events: events});
-                } else {
-                    _this.setState({ isLoading: false, events: [] });
-                }
-            })
+        Calendar.getEventsAsync([Calendar.DEFAULT], startDate, endDate).then(fulfilled => {
+            const regex = new RegExp(`${_this.state.query.trim()}`, 'i');
+            events = fulfilled.filter(event => event.location.search(regex) >= 0)
+            if(fulfilled.length > 0) {
+                _this.setState({ isLoading: false, events: events});
+            } else {
+                _this.setState({ isLoading: false, events: [] });
+            }
         })
     }
 
@@ -87,7 +119,7 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
                         location: event.location,
                         startDate: event.startDate,
                         endDate: event.endDate,
-                        isReccurent: Number.isInteger(event.recurrenceRule.occurrence),
+                        isReccurent: event.recurrenceRule ? Number.isInteger(event.recurrenceRule.occurrence) : false,
                         isIterative: false
                     }
                 ]
@@ -182,7 +214,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#efeff4',
     },
     searchbarContainer: {
-        paddingTop: 25,
         paddingBottom: 0,
         backgroundColor: '#fff',
         borderBottomWidth: 1,

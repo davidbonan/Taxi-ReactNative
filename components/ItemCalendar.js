@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Switch } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { CheckBox } from 'react-native-elements'
 
 export default class ItemCalendar extends React.Component {
