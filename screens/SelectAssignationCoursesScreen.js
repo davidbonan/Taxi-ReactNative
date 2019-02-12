@@ -1,12 +1,13 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert, RefreshControl, AlertIOS } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, Alert, RefreshControl, AlertIOS } from 'react-native';
 import moment from 'moment';
 import ItemCalendar from '../components/ItemCalendar';
-import { Icon, Calendar, SMS, Permissions } from 'expo';
+import { Calendar, SMS, Permissions } from 'expo';
 import localFR from '../constants/MomentI8n';
 import LoadingLabel from '../components/LoadingLabel';
 import { Button } from 'react-native-ios-kit';
 import { SearchBar } from 'react-native-elements';
+import update from 'immutability-helper';
 
 moment.locale('fr', localFR);
 
@@ -25,7 +26,6 @@ export default class SelectAssignationCoursesScreen extends React.Component {
             isLoading: true,
             refreshing: false,
             events: [],
-            eventsSelected: [],
             query: ""
         }
     }
@@ -35,7 +35,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
     }
 
     onRefreshList() {
-        this.setState({query: "", refreshing: true, eventsSelected: []});
+        this.setState({ query: "", refreshing: true });
         setTimeout(() => this.refreshEvents(), 500);
     }
 
@@ -80,7 +80,8 @@ export default class SelectAssignationCoursesScreen extends React.Component {
     async handleAssignButton(taxiName) {
         const _this = this;
         let body = "Courses attribuées : \n\n";
-        this.state.eventsSelected.map(event => {
+        let eventsSelected = this.state.events.filter(e => e.isSelected == true);
+        eventsSelected.map(event => {
             body += event.title + "\n \n";
         });
 
@@ -94,13 +95,12 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                           text: 'Non',
                           style: 'cancel',
                           onPress: () => {
-                            _this.setState({ eventsSelected: [] });
                             _this.refreshEvents();
                           }
                         },
                         {
                           text: 'Oui',
-                          onPress: () => _this.updateEventsSelected.call(_this, taxiName) ,
+                          onPress: () => _this.updateEventsSelected.call(_this, taxiName, eventsSelected) ,
                         },
                     ]
                 );
@@ -110,9 +110,9 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         });
     }
 
-    async updateEventsSelected(taxiName) {
-        for(let i = 0; i < this.state.eventsSelected.length; i++) {
-            let event = this.state.eventsSelected[i];
+    async updateEventsSelected(taxiName, events) {
+        for(let i = 0; i < events.length; i++) {
+            let event = events[i];
             let opt = {
                 instanceStartDate: event.startDate, 
                 futureEvents: false
@@ -129,60 +129,35 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                 "Un problème est survenu lors de l'ajout du nom du chauffeur dans l'évenement, veuillez l'ajouter manuellement")
             }
         }
-        this.setState({ eventsSelected: [] });
         this.refreshEvents();
     }
 
     handleChangeQuery(query) {
         this.setState({
-            query: query,
-            eventsSelected: []
+            query: query
         });
     }
 
-    handleSelectItem(event, index) {
-        const _this = this;
-        let isSelected = false;
-        this.state.eventsSelected.map(es => {
-            if(es.id === event.id && es.startDate == event.startDate) {
-                isSelected = true
-            }
+    handleSelectItem(event) {
+        let index = this.getIndexOfEventInList(event.id, event.startDate)
+        this.setState({
+            events: update(this.state.events, {[index]: {isSelected: {$set: !event.isSelected}}}),
         });
-        
-        if(isSelected) {
-            // We remove the event
-            let arrTmp = [...this.state.eventsSelected];
-            arrTmp = arrTmp.filter(es => event.id != es.id && event.startDate != es.startDate);
-            this.setState({
-                eventsSelected: arrTmp
-            });
-        } else {
-            // We add the event
-            this.setState({
-                eventsSelected: [
-                    ..._this.state.eventsSelected, 
-                    {
-                        id: event.id, 
-                        title: event.title, 
-                        location: event.location,
-                        startDate: event.startDate,
-                        endDate: event.endDate,
-                        isReccurent: event.recurrenceRule ? Number.isInteger(event.recurrenceRule.occurrence) : false
-                    }
-                ]
-            });
+    }
+
+    getIndexOfEventInList(id, startDate) {
+        for (let i = 0; i < this.state.events.length; i++) {
+            const event = this.state.events[i];
+            if(event.id == id && event.startDate == startDate) {
+                return i;
+            }
         }
     }
 
     renderItem(event, i, events) {
-        let isSelected = false;
         let date = null;
         let time = null;
-        this.state.eventsSelected.map(e => {
-            if(event.id == e.id && event.startDate == e.startDate) {
-                isSelected = true;
-            }
-        });
+
         if(i == 0) {
             lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
             lastTime = "00";
@@ -193,8 +168,8 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                 title={event.title} 
                 location={ event.location }
                 startDate={ event.startDate }
-                selected={ isSelected }
-                onPress={ this.handleSelectItem.bind(this, event, i) }
+                selected={ event.isSelected }
+                onPress={ this.handleSelectItem.bind(this, event) }
             />
         )
 
@@ -261,20 +236,14 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                     )
                 }
                 </ScrollView>
-                {
-                    this.state.eventsSelected.length > 0 ? (
-                        <View style={styles.containerValidateButton}>
-                            <Button 
-                                onPress={ this.handleValidateButton.bind(this) }
-                                inverted rounded
-                            >
-                                Assigner à un chauffeur
-                            </Button>
-                        </View>
-                    ) : (
-                        <View></View>
-                    )
-                }
+                <View style={styles.containerValidateButton}>
+                    <Button 
+                        onPress={ this.handleValidateButton.bind(this) }
+                        inverted rounded
+                    >
+                        Assigner à un chauffeur
+                    </Button>
+                </View>
             </View>
         );
     }
@@ -311,7 +280,7 @@ const styles = StyleSheet.create({
         margin: 10
     },
     searchbarContainer: {
-        paddingTop: 30,
+        paddingTop: 35,
         paddingBottom: 0,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
