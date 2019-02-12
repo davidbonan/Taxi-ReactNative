@@ -230,7 +230,7 @@ export default class GroupBonCoursesScreen extends React.Component {
         }
         this.resetState();
         const {navigate} = this.props.navigation;
-        navigate("SelectBonCourses", { refreshEvents: true });
+        navigate("SelectBonCourses");
     }
 
     handleSelectItem(event) {

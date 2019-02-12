@@ -6,6 +6,7 @@ import { Icon, Calendar, SMS, Permissions } from 'expo';
 import localFR from '../constants/MomentI8n';
 import LoadingLabel from '../components/LoadingLabel';
 import { Button } from 'react-native-ios-kit';
+import { SearchBar } from 'react-native-elements';
 
 moment.locale('fr', localFR);
 
@@ -24,7 +25,8 @@ export default class SelectAssignationCoursesScreen extends React.Component {
             isLoading: true,
             refreshing: false,
             events: [],
-            eventsSelected: []
+            eventsSelected: [],
+            query: ""
         }
     }
 
@@ -33,7 +35,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
     }
 
     onRefreshList() {
-        this.setState({refreshing: true, eventsSelected: []});
+        this.setState({query: "", refreshing: true, eventsSelected: []});
         setTimeout(() => this.refreshEvents(), 500);
     }
 
@@ -131,7 +133,14 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         this.refreshEvents();
     }
 
-    handleSelectItem(event) {
+    handleChangeQuery(query) {
+        this.setState({
+            query: query,
+            eventsSelected: []
+        });
+    }
+
+    handleSelectItem(event, index) {
         const _this = this;
         let isSelected = false;
         this.state.eventsSelected.map(es => {
@@ -185,7 +194,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                 location={ event.location }
                 startDate={ event.startDate }
                 selected={ isSelected }
-                onPress={ this.handleSelectItem.bind(this, event) }
+                onPress={ this.handleSelectItem.bind(this, event, i) }
             />
         )
 
@@ -221,7 +230,21 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         const _this = this;
         return (
             <View  style={styles.container}>
+                <View style={styles.searchbarContainer}>
+                    <SearchBar
+                        placeholder="Rechercher un chauffeur"
+                        value={this.state.query}
+                        onChangeText={ this.handleChangeQuery.bind(this) }
+                        round={true}
+                        lightTheme={true}
+                        containerStyle={styles.searchBar}
+                        inputContainerStyle={styles.inputContainer}
+                        cancelButtonTitle="Annuler"
+                        withCancel={false}
+                    />
+                </View>
                 <ScrollView
+                    //stickyHeaderIndices={[0, 3]}
                     refreshControl={
                         <RefreshControl
                           refreshing={ this.state.refreshing }
@@ -229,15 +252,14 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                         />  
                     }  
                 >
-                    <View>
-                        {
-                            !this.state.isLoading ? (
-                                this.state.events.map((event, i, events) => _this.renderItem.call(_this, event, i, events))
-                            ) : (
-                                <LoadingLabel />
-                            )
-                        }
-                    </View>
+                {
+                    !this.state.isLoading ? (
+                        this.state.events.filter(e => e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1)
+                                        .map((event, i, events) => _this.renderItem.call(_this, event, i, events))
+                    ) : (
+                        <LoadingLabel />
+                    )
+                }
                 </ScrollView>
                 {
                     this.state.eventsSelected.length > 0 ? (
@@ -261,7 +283,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 30,
+        //paddingTop: 30,
         backgroundColor: '#efeff4',
     },
     divider: {
@@ -287,5 +309,18 @@ const styles = StyleSheet.create({
     },
     containerValidateButton: {
         margin: 10
-    }
+    },
+    searchbarContainer: {
+        paddingTop: 30,
+        paddingBottom: 0,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#D1D1D1'
+    },
+    searchBar: {
+        backgroundColor: '#ffffff'
+    },
+    inputContainer: {
+        backgroundColor: '#efeff4'
+    },
 });
