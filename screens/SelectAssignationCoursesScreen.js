@@ -5,10 +5,12 @@ import ItemCalendar from '../components/ItemCalendar';
 import { Icon, Calendar, SMS, Permissions } from 'expo';
 import localFR from '../constants/MomentI8n';
 import LoadingLabel from '../components/LoadingLabel';
+import { Button } from 'react-native-ios-kit';
 
 moment.locale('fr', localFR);
 
 let lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
+let lastTime = "00";
 
 export default class SelectAssignationCoursesScreen extends React.Component {
     static navigationOptions = {
@@ -70,7 +72,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                 },
             ],
             'plain-text',
-          );
+        );
     }
 
     async handleAssignButton(taxiName) {
@@ -82,7 +84,24 @@ export default class SelectAssignationCoursesScreen extends React.Component {
 
         SMS.sendSMSAsync("06", body).then( ({ result }) => {
             if(result == 'sent') {
-                _this.updateEventsSelected(taxiName);
+                AlertIOS.alert(
+                    'Ajouter le nom du chauffeur',
+                    "Voulez-vous ajouter le nom du chauffeur qui s'ajoutera à l'évenement",
+                    [
+                        {
+                          text: 'Non',
+                          style: 'cancel',
+                          onPress: () => {
+                            _this.setState({ eventsSelected: [] });
+                            _this.refreshEvents();
+                          }
+                        },
+                        {
+                          text: 'Oui',
+                          onPress: () => _this.updateEventsSelected.call(_this, taxiName) ,
+                        },
+                    ]
+                );
             } else {
                 Alert.alert("Problème lors de l'envoi", "Un problème est survenu lors de l'envoi du SMS. Aucun SMS envoyés.")
             }
@@ -148,6 +167,8 @@ export default class SelectAssignationCoursesScreen extends React.Component {
 
     renderItem(event, i, events) {
         let isSelected = false;
+        let date = null;
+        let time = null;
         this.state.eventsSelected.map(e => {
             if(event.id == e.id && event.startDate == e.startDate) {
                 isSelected = true;
@@ -155,12 +176,9 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         });
         if(i == 0) {
             lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
+            lastTime = "00";
         }
-        const date = (
-            <Text key={ event.id + '_01' } style={ styles.date } >
-                { moment(event.startDate).format("DD MMMM") }
-            </Text>
-        )
+        
         const itemCalendar = (
             <ItemCalendar key={ event.id + event.startDate } 
                 title={event.title} 
@@ -173,10 +191,30 @@ export default class SelectAssignationCoursesScreen extends React.Component {
 
         if(moment(event.startDate).format("YYYYMMDD") > lastDate) {
             lastDate = moment(event.startDate).format("YYYYMMDD");
-            return [date, itemCalendar];
-        } else {
-            return itemCalendar;
+            date = (
+                <View key={ event.id + '_01' }>
+                    <Text style={ styles.date } >
+                        { moment(event.startDate).format("DD MMMM") }
+                    </Text>
+                    <View style={styles.divider}></View>
+                </View>
+            )
         }
+
+        if(moment(event.startDate).format("HH") > lastTime || moment(event.startDate).format("HH") < lastTime ) {
+            lastTime = moment(event.startDate).format("HH");
+            time = (
+                <Text key={ event.id + '_01_' } style={ styles.time } >
+                    { moment(event.startDate).format("HH:00") }
+                </Text>
+            )
+        }
+
+        return [
+            date,
+            time,
+            itemCalendar
+        ];
     }
 
     render() {
@@ -201,13 +239,20 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                         }
                     </View>
                 </ScrollView>
-                <TouchableOpacity style={ styles.assignButton } onPress={ this.handleValidateButton.bind(this) }>
-                    <Icon.Ionicons
-                        name='ios-checkmark'
-                        size={50}
-                        color='#fff'
-                    />
-                </TouchableOpacity>
+                {
+                    this.state.eventsSelected.length > 0 ? (
+                        <View style={styles.containerValidateButton}>
+                            <Button 
+                                onPress={ this.handleValidateButton.bind(this) }
+                                inverted rounded
+                            >
+                                Assigner à un chauffeur
+                            </Button>
+                        </View>
+                    ) : (
+                        <View></View>
+                    )
+                }
             </View>
         );
     }
@@ -219,28 +264,28 @@ const styles = StyleSheet.create({
         paddingTop: 30,
         backgroundColor: '#efeff4',
     },
+    divider: {
+        position: 'absolute',
+        top: 32,
+        right: 0,
+        left: 90,
+        height: 1,
+        backgroundColor: 'red',
+        opacity: 0.3
+    },
     date: {
         marginTop: 25,
         marginBottom: 5,
         marginRight: 10,
-        marginLeft: 50,
+        marginLeft: 10,
         fontSize: 14,
         color: '#979797'
     },
-    assignButton: {
-        position: 'absolute',
-        bottom: 20,
-        right: 20,
-        width: 50,
-        height: 50,
-        borderRadius: 50,
-        backgroundColor: '#27ae60',
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#333',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.8,
-        shadowRadius: 2,
-        elevation: 1,
+    time: {
+        margin: 10,
+        color: '#3498db'
+    },
+    containerValidateButton: {
+        margin: 10
     }
 });

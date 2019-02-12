@@ -1,6 +1,8 @@
 import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Alert, AlertIOS } from "react-native";
+import { Button } from 'react-native-ios-kit';
 import { CheckBox } from 'react-native-elements'
+import Locations from '../constants/Locations';
 
 export default class ItemCalendar extends React.Component {
     constructor(props) {
@@ -13,13 +15,49 @@ export default class ItemCalendar extends React.Component {
 
     handleCheckIterative() {
         const { onCheck } = this.props;
-        //this.setState({checked: !this.state.checked});
         if(onCheck)
             onCheck();
     }
 
+    handleChangeDestination() {
+        const { onChangeDestination } = this.props;
+        let buttons = Locations.map(location => {
+            return {
+                text: location.value,
+                onPress: () => { onChangeDestination(location.value) }
+            }
+        });
+        buttons.push({
+            text: 'Autre', 
+            onPress: () => {
+                AlertIOS.prompt(
+                    'Destination',
+                    'Entrer la destination qui sera affiché dans l\'email',
+                    [
+                        {
+                          text: 'Annuler',
+                          style: 'cancel'
+                        },
+                        {
+                          text: 'OK',
+                          onPress: (text) => { onChangeDestination(text) } ,
+                        },
+                    ],
+                    'plain-text',
+                );
+            }
+        });
+        buttons.push({text: 'Annuler', style: 'cancel'});
+        Alert.alert(
+            'Destination',
+            'Changer la destination qui sera affiché dans l\'email',
+            buttons,
+            {cancelable: true},
+        );
+    }
+
     render () {
-        const { title, location, selected, enableSwitch, isChecked } = this.props;
+        const { title, location, selected, enableSwitch, isChecked, destination, enableDestination } = this.props;
 
         return (
             <TouchableOpacity {...this.props}>
@@ -30,9 +68,7 @@ export default class ItemCalendar extends React.Component {
                                     selected ? (
                                         <View style={styles.checkboxInner}>
                                         </View>
-                                    ) : (
-                                        <View></View>
-                                    )
+                                    ) : (null)
                                 }
                                 
                             </View>
@@ -44,20 +80,30 @@ export default class ItemCalendar extends React.Component {
                         <Text style={styles.location}>
                             { location }
                         </Text>
-                        {
-                            enableSwitch ? (
-                                <CheckBox
-                                    containerStyle={{ backgroundColor: '#fff', borderWidth: 0, margin: 0, padding: 0 }}
-                                    right
-                                    title='Course itérative'
-                                    checked={isChecked}
-                                    onPress={ this.handleCheckIterative.bind(this) }
-                                />
-                            ) : (
-                                <View></View>
-                            )
-                        }
-                        
+                        <View style={ styles.detail }>
+                            {
+                                enableDestination ? (
+                                    <Button 
+                                        style={ styles.destination }
+                                        onPress={ this.handleChangeDestination.bind(this) }  
+                                        rounded              
+                                    >
+                                        { destination ? destination : 'Pour...' }
+                                    </Button>
+                                ) : (null)
+                            }
+                            {
+                                enableSwitch ? (
+                                    <CheckBox
+                                        containerStyle={ styles.checkBoxIterative }
+                                        right
+                                        title='Course itérative'
+                                        checked={isChecked}
+                                        onPress={ this.handleCheckIterative.bind(this) }
+                                    />
+                                ) : (null)
+                            }
+                        </View>                        
                     </View>
                 </View>
             </TouchableOpacity>
@@ -106,5 +152,22 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         fontSize: 12,
         color: '#979797'
+    },
+    detail: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignSelf: 'flex-end',
+    },
+    destination: {
+        flex: 1,
+        padding: 5,
+        marginTop: 5
+    },
+    checkBoxIterative: {
+        flex: 1,
+        backgroundColor: '#fff', 
+        borderWidth: 0, 
+        margin: 0, 
+        padding: 0
     }
 });

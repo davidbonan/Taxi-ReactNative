@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, Button as ButtonNative } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, RefreshControl, Button as ButtonNative } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { Button } from 'react-native-ios-kit';
 import moment from 'moment';
@@ -11,6 +11,7 @@ import LoadingLabel from '../components/LoadingLabel';
 moment.locale('fr', localFR);
 
 let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
+let idTimeout;
 
 export default class SelectBonCoursesScreenScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -33,19 +34,13 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
             query: "",
             isLoading: false,
             events: [],
-            eventsSelected: []
+            eventsSelected: [],
+            refreshing: false
         }
     }
 
     componentDidMount() {
         this.props.navigation.setParams({ handleReset: () => this.resetState() });
-    }
-
-    componentDidUpdate() {
-        if(this.props.navigation.getParam('refreshEvents', false)) {
-            this.props.navigation.setParams({ refreshEvents: false});
-            this.updateEventsList();
-        }
     }
 
     resetState() {
@@ -57,11 +52,20 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
         })
     }
 
+    onRefreshList() {
+        this.setState({refreshing: true, eventsSelected: []});
+        setTimeout(() => this.updateEventsList(), 500);
+    }
+
     handleChangeQuery(query) {
+        clearTimeout(idTimeout);
         this.setState({ query: query });
         if( query.length > 2 ) {
-            this.setState({ isLoading: true })
-            this.updateEventsList();
+            const _this = this;
+            _this.setState({ isLoading: true })
+            idTimeout = setTimeout(() => {
+                _this.updateEventsList();
+            }, 500)
         } else {
             this.setState({ isLoading: false, events: [] })
         }
@@ -73,16 +77,17 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
             AlertIOS.alert('Vous devez authoriser l\'accès au calendrier');
         }
 
-        let startDate = moment(new Date()).subtract(120, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-        let endDate = moment(new Date()).add(120, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+        let startDate = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+        let endDate = moment(new Date()).add(30, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let _this = this;
+        this.setState({ eventsSelected: [] })
         Calendar.getEventsAsync([Calendar.DEFAULT], startDate, endDate).then(fulfilled => {
             const regex = new RegExp(`${_this.state.query.trim()}`, 'i');
-            events = fulfilled.filter(event => event.location.search(regex) >= 0)
+            events = fulfilled.filter(event => event.location.search(regex) > -1 || event.title.search(regex) > -1)
             if(fulfilled.length > 0) {
-                _this.setState({ isLoading: false, events: events});
+                _this.setState({ isLoading: false, events: events, refreshing: false});
             } else {
-                _this.setState({ isLoading: false, events: [] });
+                _this.setState({ isLoading: false, events: [], refreshing: false });
             }
         })
     }
@@ -177,7 +182,14 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
                         cancelButtonTitle="Annuler"
                     />
                 </View>
-                <ScrollView>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={ this.state.refreshing }
+                            onRefresh={ this.onRefreshList.bind(this) }
+                        />  
+                    }  
+                >
                     <View>
                         {
                             !this.state.isLoading ? (

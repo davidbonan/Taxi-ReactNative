@@ -1,14 +1,15 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, Text, AlertIOS, Linking, Button as ButtonNative, Alert } from 'react-native';
 import { Button } from 'react-native-ios-kit';
-import { Calendar, Permissions } from 'expo';
+import { Calendar, Permissions, MailComposer } from 'expo';
 import moment from 'moment';
 import localFR from '../constants/MomentI8n';
 import ItemCalendar from '../components/ItemCalendar';
 import _ from 'lodash';
 import update from 'immutability-helper';
+import Locations from '../constants/Locations';
 
-let lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
+let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
 
 export default class GroupBonCoursesScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -26,9 +27,9 @@ export default class GroupBonCoursesScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
+        
         this.state = {
-            events: this.props.navigation.getParam('events', []), 
+            events: this.getMatchingEventWithLocation(), 
             eventsSelected: [],
             groupedEvents: []
         }
@@ -40,10 +41,27 @@ export default class GroupBonCoursesScreen extends React.Component {
 
     resetState() {
         this.setState({
-            events: this.props.navigation.getParam('events', []), 
+            events: this.getMatchingEventWithLocation(), 
             eventsSelected: [],
             groupedEvents: []
         })
+    }
+
+    getMatchingEventWithLocation() {
+        let events = _.sortBy([...this.props.navigation.getParam('events', [])], function(e) { return new moment(e.startDate); });
+        events.map(event => {
+            for (let i = 0; i < Locations.length; i++) {
+                const location = Locations[i];
+                location.key.map(k => {
+                    let regex = new RegExp(`${k}`, 'i');
+                    if(event.title.search(regex) != -1) {
+                        event.destination = location.value;
+                    }
+                });
+            }
+            return event;
+        });
+        return events;
     }
 
     getEventsWithoutEventsSelected() {
@@ -104,21 +122,26 @@ export default class GroupBonCoursesScreen extends React.Component {
     }
 
     handleOpenMail() {
+        const _this = this;
         let body = encodeURI(this.getFormatedBody());
-        let subject = encodeURI("Demande de bons")
-        Linking.openURL('mailto:support@example.com?subject=' + subject + '&body=' + body);
+        let subject = encodeURI("Demande de bons");
+        Linking.openURL("mailto:?subject="+subject+"&body="+body)
         AlertIOS.alert(
             'Supprimer mention "Bon"',
             'Voulez-vous supprimer la mention "Bon" des courses sélectionnées ?',
             [
                 {
                     text: 'Non',
-                    onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
+                    onPress: () => {
+                        _this.resetState();
+                    }
                 },
                 {
                     text: 'Oui',
-                    onPress: () => this.removeMentionBon(),
+                    onPress: () => {
+                        _this.removeMentionBon();
+                    }
                 },
             ],
         );
@@ -126,36 +149,52 @@ export default class GroupBonCoursesScreen extends React.Component {
 
     getFormatedBody() {
         let body = "Bonjour Mme/Mr. xxxx, \nJe te fais la liste des bons. \n\n";
-        let eventsIterative = [];
         this.state.groupedEvents.map(groupedEvent => {
-            let previousDate = null;
-            let events = _.sortBy([...groupedEvent.events], function(e) { return new moment(e.startDate); });
             body += "- " + groupedEvent.clientName + "\n";
-
+            let events = _.sortBy([...groupedEvent.events], function(e) { return new moment(e.startDate); });
+            let iterativeEvents = [];
+            let eventsGroupedByDestination = {};
             for (let i = 0; i < events.length; i++) {
                 const event = events[i];
-                
+                let destination = event.destination ? event.destination : "n/c";
                 if(event.isIterative) {
-                    eventsIterative.push(groupedEvent.clientName);
+                    iterativeEvents.push(event);
                     continue;
                 }
-
-                let currentDate = moment(event.startDate);
-                if(previousDate && previousDate.format('YYYYMM') < currentDate.format('YYYYMM')) {
-                    body = body.slice(0, -1);
-                    body += "/" + previousDate.format('MM/YYYY') + "\n";
+                if(!eventsGroupedByDestination[destination]) {
+                    eventsGroupedByDestination[destination] = [];
                 }
-                body += currentDate.format('DD') + '-';
-                previousDate = currentDate;
+                eventsGroupedByDestination[destination].push(event);
             }
-            body = body.slice(0, -1);
-            body += "/" + previousDate.format('MM/YYYY') + "\n\n";
+            
+            // Parcour des tableaux d'évenements par destinations
+            for (let destinationName in eventsGroupedByDestination) {
+                let previousDate = null;
+                // Parcour des évenements par destination
+                for (let j = 0; j < eventsGroupedByDestination[destinationName].length; j++) {
+                    const event = eventsGroupedByDestination[destinationName][j];
+                    let currentDate = moment(event.startDate);
+                    // Si l'on change de jour
+                    if(previousDate && previousDate.format('YYYYMM') < currentDate.format('YYYYMM')) {
+                        body = body.slice(0, -1);
+                        body += "/" + previousDate.format('MM/YY') + "\n";
+                    }
+                    body += currentDate.format('DD') + '-';
+                    previousDate = currentDate;
+                }
+                body = body.slice(0, -1);
+                body += "/" + previousDate.format('MM/YY') + " pour " + destinationName + "\n";
+            }
+
+            // Ajout des demandes de bons itératifs
+            for (let y = 0; y < iterativeEvents.length; y++) {
+                const iterativeEvent = iterativeEvents[y];
+                body += moment(iterativeEvent.startDate).format("DD/MM/YY") + " bon itératif 35 transports aller retour\n";  
+            }
+
+            body += "\n";
         });
 
-        for (let i = 0; i < eventsIterative.length; i++) {
-            const clientName = eventsIterative[i];
-            body += '- ' + clientName + "\n35 courses\n\n";
-        }
         body += "\n\nMerci beaucoup"
         return body;
     }
@@ -189,6 +228,7 @@ export default class GroupBonCoursesScreen extends React.Component {
                 }
             }
         }
+        this.resetState();
         const {navigate} = this.props.navigation;
         navigate("SelectBonCourses", { refreshEvents: true });
     }
@@ -221,20 +261,32 @@ export default class GroupBonCoursesScreen extends React.Component {
                         startDate: event.startDate,
                         endDate: event.endDate,
                         isReccurent: event.isReccurent,
-                        isIterative: event.isIterative
+                        isIterative: event.isIterative,
+                        destination: event.destination
                     }
                 ]
             });
         }
     }
 
-    handleCheckItem(event, index, isSelected) {
+    handleToggleIterativeCheckbox(event, index, isSelected) {
         let eventsSelected = this.state.eventsSelected;
         if(isSelected) {
             eventsSelected = update(this.state.eventsSelected, {[index]: {isIterative: {$set: !event.isIterative}}})
         }
         this.setState({
             events: update(this.state.events, {[index]: {isIterative: {$set: !event.isIterative}}}),
+            eventsSelected: eventsSelected
+        });
+    }
+
+    handleChangeDestination(destination, index, isSelected) {
+        let eventsSelected = this.state.eventsSelected;
+        if(isSelected) {
+            eventsSelected = update(this.state.eventsSelected, {[index]: {destination: {$set: destination}}})
+        }
+        this.setState({
+            events: update(this.state.events, {[index]: {destination: {$set: destination}}}),
             eventsSelected: eventsSelected
         });
     }
@@ -259,11 +311,14 @@ export default class GroupBonCoursesScreen extends React.Component {
                 title={event.title} 
                 enableSwitch={ true }
                 location={ event.location }
+                enableDestination={ true }
+                destination={ event.destination }
                 startDate={ event.startDate }
                 selected={ isSelected }
                 isChecked={ event.isIterative }
                 onPress={ this.handleSelectItem.bind(this, event) }
-                onCheck={ this.handleCheckItem.bind(this, event, i, isSelected) }
+                onCheck={ this.handleToggleIterativeCheckbox.bind(this, event, i, isSelected) }
+                onChangeDestination={(destination) => this.handleChangeDestination.call(this, destination, i, isSelected) }
             />
         )
 
