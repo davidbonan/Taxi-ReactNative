@@ -13,6 +13,19 @@ export default class ItemCalendar extends React.Component {
         }
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        const { isChecked, destination, selected } = this.props;
+        if(
+            nextProps.isChecked == isChecked &&
+            nextProps.destination == destination &&
+            nextProps.selected == selected
+            ) {
+                return false;
+            } else {
+                return true;
+            }
+    }
+
     handleCheckIterative() {
         const { onCheck } = this.props;
         if(onCheck)

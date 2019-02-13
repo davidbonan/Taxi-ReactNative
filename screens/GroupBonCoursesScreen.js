@@ -1,13 +1,14 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, AlertIOS, Linking, Button as ButtonNative, Alert } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, AlertIOS, Linking, FlatList, Button as ButtonNative, Alert } from 'react-native';
 import { Button } from 'react-native-ios-kit';
-import { Calendar, Permissions, MailComposer } from 'expo';
+import { SearchBar } from 'react-native-elements';
+import { Calendar, Permissions } from 'expo';
 import moment from 'moment';
-import localFR from '../constants/MomentI8n';
 import ItemCalendar from '../components/ItemCalendar';
 import _ from 'lodash';
 import update from 'immutability-helper';
 import Locations from '../constants/Locations';
+import { EventStorage } from '../store/Storage';
 
 let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
 
@@ -18,8 +19,8 @@ export default class GroupBonCoursesScreen extends React.Component {
             headerTitle: 'Grouper les courses',
             headerRight: (
                 <ButtonNative
-                    onPress={() => state.params.handleReset()} 
-                    title="Reset"
+                    onPress={() => state.params.clearStorage()} 
+                    title="Vider"
                 />
             ),
         }
@@ -29,77 +30,55 @@ export default class GroupBonCoursesScreen extends React.Component {
         super(props);
         
         this.state = {
-            events: this.getMatchingEventWithLocation(), 
-            eventsSelected: [],
-            groupedEvents: []
+            query: "",
+            events: []
         }
     }
 
-    componentDidMount() {
-        this.props.navigation.setParams({ handleReset: () => this.resetState() })
-    }
-
-    resetState() {
+    async componentDidMount() {
+        this.props.navigation.setParams({ clearStorage: () => this.clearStorage() })
+        let eventsInStorage = await EventStorage.getEvents();
         this.setState({
-            events: this.getMatchingEventWithLocation(), 
-            eventsSelected: [],
-            groupedEvents: []
+            events: this.matchEventWithDestination(eventsInStorage),
         })
     }
 
-    getMatchingEventWithLocation() {
-        let events = _.sortBy([...this.props.navigation.getParam('events', [])], function(e) { return new moment(e.startDate); });
-        events.map(event => {
-            for (let i = 0; i < Locations.length; i++) {
-                const location = Locations[i];
-                location.key.map(k => {
-                    let regex = new RegExp(`${k}`, 'i');
-                    if(event.title.search(regex) != -1) {
-                        event.destination = location.value;
-                    }
-                });
-            }
-            return event;
+    clearStorage() {
+        const _this = this;
+        EventStorage.clear().then(() => {
+            Alert.alert("Le stockage a bien été vidé.")
+            _this.setState({
+                events: []
+            });
         });
-        return events;
     }
 
-    getEventsWithoutEventsSelected() {
-        const _this = this;
-        let arr = this.state.events.filter(e => {
-            for(let i = 0; i < _this.state.eventsSelected.length; i++ ) {
-                let eventSelected = _this.state.eventsSelected[i];
-                if(eventSelected.id == e.id && eventSelected.startDate == e.startDate) {
-                    return false;
+    matchEventWithDestination(events) {
+        return events.map(e => {
+            if(!e.destination) {
+                for (let i = 0; i < Locations.length; i++) {
+                    const location = Locations[i];
+                    location.key.map(k => {
+                        let regex = new RegExp(`${k}`, 'i');
+                        if(e.title.search(regex) != -1) {
+                            e.destination = location.value;
+                        }
+                    });
                 }
             }
-            return true;
+            return e;
         });
-        return arr;
     }
 
-    handleGroupEvents(clientName) {
-        let clientExist = false;
-        let groupedEvents = [...this.state.groupedEvents];
-        for (let i = 0; i < groupedEvents.length; i++) {
-            let groupedEvent = groupedEvents[i];
-            if(groupedEvent.clientName == clientName) {
-                clientExist = true;
-                groupedEvent.events = groupedEvent.events.concat(this.state.eventsSelected)
-            }
-        }
-        if(!clientExist) {
-            groupedEvents.push({
-                clientName: clientName,
-                events: this.state.eventsSelected
-            });
-        }
-        
-        this.setState({ 
-            events: this.getEventsWithoutEventsSelected(),
-            groupedEvents: groupedEvents,
-            eventsSelected: [],
-         });
+    async groupEventByClientName(clientName) {
+        const _this = this
+        let selectedEvents = this.state.events.filter(e => e.isSelected == true);
+        selectedEvents.map( async (e) => {
+            // Suppression de la selection
+            await _this.handleSelectItem.call(_this, e);
+            // Ajout du nom du client à l'évenement
+            await _this.handleGroupItemWithClientName.call(_this, e, clientName);
+        })
     }
 
     handleValidateGroupEvents() {
@@ -114,86 +93,63 @@ export default class GroupBonCoursesScreen extends React.Component {
                 },
                 {
                   text: 'OK',
-                  onPress: (text) => this.handleGroupEvents.call(_this, text) ,
+                  onPress: (clientName) => _this.groupEventByClientName.call(_this, clientName) ,
                 },
             ],
             'plain-text',
-          );
-    }
-
-    handleOpenMail() {
-        const _this = this;
-        let body = encodeURI(this.getFormatedBody());
-        let subject = encodeURI("Demande de bons");
-        Linking.openURL("mailto:?subject="+subject+"&body="+body)
-        AlertIOS.alert(
-            'Supprimer mention "Bon"',
-            'Voulez-vous supprimer la mention "Bon" des courses sélectionnées ?',
-            [
-                {
-                    text: 'Non',
-                    style: 'cancel',
-                    onPress: () => {
-                        _this.resetState();
-                    }
-                },
-                {
-                    text: 'Oui',
-                    onPress: () => {
-                        _this.removeMentionBon();
-                    }
-                },
-            ],
         );
     }
 
     getFormatedBody() {
         let body = "Bonjour Mme/Mr. xxxx, \nJe te fais la liste des bons. \n\n";
-        this.state.groupedEvents.map(groupedEvent => {
-            body += "- " + groupedEvent.clientName + "\n";
-            let events = _.sortBy([...groupedEvent.events], function(e) { return new moment(e.startDate); });
-            let iterativeEvents = [];
-            let eventsGroupedByDestination = {};
-            for (let i = 0; i < events.length; i++) {
-                const event = events[i];
-                let destination = event.destination ? event.destination : "n/c";
-                if(event.isIterative) {
-                    iterativeEvents.push(event);
-                    continue;
-                }
-                if(!eventsGroupedByDestination[destination]) {
-                    eventsGroupedByDestination[destination] = [];
-                }
-                eventsGroupedByDestination[destination].push(event);
-            }
-            
-            // Parcour des tableaux d'évenements par destinations
-            for (let destinationName in eventsGroupedByDestination) {
-                let previousDate = null;
-                // Parcour des évenements par destination
-                for (let j = 0; j < eventsGroupedByDestination[destinationName].length; j++) {
-                    const event = eventsGroupedByDestination[destinationName][j];
-                    let currentDate = moment(event.startDate);
-                    // Si l'on change de jour
-                    if(previousDate && previousDate.format('YYYYMM') < currentDate.format('YYYYMM')) {
-                        body = body.slice(0, -1);
-                        body += "/" + previousDate.format('MM/YY') + "\n";
+        _.map(
+            _.groupBy(this.state.events.filter(e => _.isString(e.clientName) == true), "clientName"), 
+            (events, clientName) => {
+                
+                body += "- " + clientName + "\n";
+                events = _.sortBy(events, e => { return new moment(e.startDate); });
+                let iterativeEvents = [];
+                let eventsGroupedByDestination = {};
+                for (let i = 0; i < events.length; i++) {
+                    const event = events[i];
+                    let destination = event.destination ? event.destination : "n/c";
+                    if(event.isIterative) {
+                        iterativeEvents.push(event);
+                        continue;
                     }
-                    body += currentDate.format('DD') + '-';
-                    previousDate = currentDate;
+                    if(!eventsGroupedByDestination[destination]) {
+                        eventsGroupedByDestination[destination] = [];
+                    }
+                    eventsGroupedByDestination[destination].push(event);
                 }
-                body = body.slice(0, -1);
-                body += "/" + previousDate.format('MM/YY') + " pour " + destinationName + "\n";
-            }
+                // Parcour des tableaux d'évenements par destinations
+                for (let destinationName in eventsGroupedByDestination) {
+                    let previousDate = null;
+                    // Parcour des évenements par destination
+                    for (let j = 0; j < eventsGroupedByDestination[destinationName].length; j++) {
+                        const event = eventsGroupedByDestination[destinationName][j];
+                        let currentDate = moment(event.startDate);
+                        // Si l'on change de jour
+                        if(previousDate && previousDate.format('YYYYMM') < currentDate.format('YYYYMM')) {
+                            body = body.slice(0, -1);
+                            body += "/" + previousDate.format('MM/YY') + "\n";
+                        }
+                        body += currentDate.format('DD') + '-';
+                        previousDate = currentDate;
+                    }
+                    body = body.slice(0, -1);
+                    body += "/" + previousDate.format('MM/YY') + " pour " + destinationName + "\n";
+                }
 
-            // Ajout des demandes de bons itératifs
-            for (let y = 0; y < iterativeEvents.length; y++) {
-                const iterativeEvent = iterativeEvents[y];
-                body += moment(iterativeEvent.startDate).format("DD/MM/YY") + " bon itératif 35 transports aller retour\n";  
-            }
+                // Ajout des demandes de bons itératifs
+                for (let y = 0; y < iterativeEvents.length; y++) {
+                    const iterativeEvent = iterativeEvents[y];
+                    body += moment(iterativeEvent.startDate).format("DD/MM/YY") + " bon itératif 35 transports aller retour\n";  
+                }
 
-            body += "\n";
-        });
+                body += "\n";
+            }
+        ); 
 
         body += "\n\nMerci beaucoup"
         return body;
@@ -206,184 +162,212 @@ export default class GroupBonCoursesScreen extends React.Component {
             return;
         }
 
-        for(let i = 0; i < this.state.groupedEvents.length; i++) {
-            const events = this.state.groupedEvents[i].events;
-            for (let j = 0; j < events.length; j++) {
-                const event = events[j];
-                let newlocation = event.location.replace(new RegExp("bon", "ig"), '');
-                let opt = {
-                    instanceStartDate: event.startDate, 
-                    futureEvents: false
-                };
-                let values = {
-                    startDate: event.startDate,
-                    endDate: event.endDate,
-                    location: newlocation
-                }
-                try {
-                    let resp = await Calendar.updateEventAsync(event.id, values, opt);
-                } catch (error) {
-                    Alert.alert("Problème lors de la mise à jour de l'évenement", 
-                    "Un problème est survenu lors du retrait de la mention \"Bon\" dans l'évenement, veuillez le retirer manuellement")
-                }
+        this.state.events.filter(e => _.isString(e.clientName)).map(async event => {
+            let newlocation = event.location.replace(new RegExp("bon", "ig"), '');
+            let opt = {
+                instanceStartDate: event.startDate, 
+                futureEvents: false
+            };
+            let values = {
+                startDate: event.startDate,
+                endDate: event.endDate,
+                location: newlocation
             }
-        }
-        this.resetState();
-        const {navigate} = this.props.navigation;
-        navigate("SelectBonCourses");
-    }
-
-    handleSelectItem(event) {
-        const _this = this;
-        let isSelected = false;
-        this.state.eventsSelected.map(es => {
-            if(es.id === event.id && es.startDate == event.startDate) {
-                isSelected = true
+            try {
+                let resp = await Calendar.updateEventAsync(event.id, values, opt);
+            } catch (error) {
+                Alert.alert("Problème lors de la mise à jour de l'évenement", 
+                "Un problème est survenu lors du retrait de la mention \"Bon\" dans l'évenement, veuillez le retirer manuellement")
             }
         });
-        
-        if(isSelected) {
-            // We remove the event
-            let arrTmp = [...this.state.eventsSelected];
-            arrTmp = arrTmp.filter(es => event.id != es.id && event.startDate != es.startDate);
-            this.setState({
-                eventsSelected: arrTmp
-            });
-        } else {
-            // We add the event
-            this.setState({
-                eventsSelected: [
-                    ..._this.state.eventsSelected, 
-                    {
-                        id: event.id, 
-                        title: event.title, 
-                        location: event.location,
-                        startDate: event.startDate,
-                        endDate: event.endDate,
-                        isReccurent: event.isReccurent,
-                        isIterative: event.isIterative,
-                        destination: event.destination
-                    }
-                ]
-            });
-        }
+        Alert.alert("Tous les bons ont été retiré", "Vider le stockage pour faire un nouveau envoi");
     }
 
-    handleToggleIterativeCheckbox(event, index, isSelected) {
-        let eventsSelected = this.state.eventsSelected;
-        if(isSelected) {
-            eventsSelected = update(this.state.eventsSelected, {[index]: {isIterative: {$set: !event.isIterative}}})
-        }
+    handleOpenClientMail() {
+        const _this = this;
+        let body = encodeURI(this.getFormatedBody());
+        let subject = encodeURI("Demande de bons");
+        Linking.openURL("mailto:?subject="+subject+"&body="+body)
+        AlertIOS.alert(
+            'Supprimer mention "Bon"',
+            'Voulez-vous supprimer la mention "Bon" des courses sélectionnées ?',
+            [
+                {
+                    text: 'Non',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Oui',
+                    onPress: () => {
+                        _this.removeMentionBon();
+                    }
+                },
+            ],
+        );
+    }
+
+    handleChangeQuery(query) {
+        this.setState({
+            query: query
+        });
+    }
+
+    async handleGroupItemWithClientName(event, clientName) {
+        let index = this.getIndexOfEventInList(event.id, event.startDate)
+        this.setState({
+            events: update(this.state.events, {[index]: {clientName: {$set: clientName}}}),
+        });
+        await EventStorage.updateEvent(event, { clientName: clientName });
+    }
+
+    async handleSelectItem(event) {
+        let index = this.getIndexOfEventInList(event.id, event.startDate)
+        this.setState({
+            events: update(this.state.events, {[index]: {isSelected: {$set: !event.isSelected}}}),
+        });
+        await EventStorage.updateEvent(event, { isSelected: !event.isSelected });
+    }
+
+    async handleToggleIterativeCheckbox(event) {
+        let index = this.getIndexOfEventInList(event.id, event.startDate)
         this.setState({
             events: update(this.state.events, {[index]: {isIterative: {$set: !event.isIterative}}}),
-            eventsSelected: eventsSelected
         });
+        await EventStorage.updateEvent(event, { isIterative: !event.isIterative });
     }
 
-    handleChangeDestination(destination, index, isSelected) {
-        let eventsSelected = this.state.eventsSelected;
-        if(isSelected) {
-            eventsSelected = update(this.state.eventsSelected, {[index]: {destination: {$set: destination}}})
-        }
+    async handleChangeDestination(event, destination) {
+        let index = this.getIndexOfEventInList(event.id, event.startDate)
         this.setState({
             events: update(this.state.events, {[index]: {destination: {$set: destination}}}),
-            eventsSelected: eventsSelected
         });
+        await EventStorage.updateEvent(event, { destination: destination });
     }
 
-    renderItem(event, i, events) {
-        let isSelected = false;
-        this.state.eventsSelected.map(e => {
-            if(event.id == e.id && event.startDate == e.startDate) {
-                isSelected = true;
+    getIndexOfEventInList(id, startDate) {
+        for (let i = 0; i < this.state.events.length; i++) {
+            const event = this.state.events[i];
+            if(event.id == id && event.startDate == startDate) {
+                return i;
             }
-        });
+        }
+    }
+
+    renderItem(event, i) {
+        let date = null;
+
         if(i == 0) {
             lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
         }
-        const date = (
-            <Text key={ event.id + '_01' } style={ styles.date } >
-                { moment(event.startDate).format("DD MMMM YYYY") }
-            </Text>
-        )
+        
         const itemCalendar = (
             <ItemCalendar key={ event.id + event.startDate } 
                 title={event.title} 
-                enableSwitch={ true }
                 location={ event.location }
+                startDate={ event.startDate }
+                selected={ event.isSelected }
+                onPress={ this.handleSelectItem.bind(this, event) }
+                enableSwitch={ true }
+                isChecked={ event.isIterative }
+                onCheck={ this.handleToggleIterativeCheckbox.bind(this, event) }
                 enableDestination={ true }
                 destination={ event.destination }
-                startDate={ event.startDate }
-                selected={ isSelected }
-                isChecked={ event.isIterative }
-                onPress={ this.handleSelectItem.bind(this, event) }
-                onCheck={ this.handleToggleIterativeCheckbox.bind(this, event, i, isSelected) }
-                onChangeDestination={(destination) => this.handleChangeDestination.call(this, destination, i, isSelected) }
+                onChangeDestination={(destination) => this.handleChangeDestination.call(this, event, destination) }
             />
         )
 
         if(moment(event.startDate).format("YYYYMMDD") > lastDate) {
             lastDate = moment(event.startDate).format("YYYYMMDD");
-            return [date, itemCalendar];
-        } else {
-            return itemCalendar;
+            date = (
+                <View key={ event.id + event.startDate + '_date' }>
+                    <Text style={ styles.date } >
+                        { moment(event.startDate).format("DD MMMM") }
+                    </Text>
+                    <View style={styles.divider}></View>
+                </View>
+            )
         }
+
+        return [
+            date,
+            itemCalendar
+        ];
     }
+
+    _keyExtractor = (item, index) => item.id + item.startDate + index;
 
     render() {
         const _this = this;
         return (
             <View style={styles.container}>
+                <View style={styles.searchbarContainer}>
+                    <SearchBar
+                        placeholder="Rechercher les bons"
+                        value={this.state.query}
+                        onChangeText={ this.handleChangeQuery.bind(this) }
+                        showLoading={this.state.isLoading}
+                        round={true}
+                        lightTheme={true}
+                        containerStyle={styles.searchBar}
+                        inputContainerStyle={styles.inputContainer}
+                        cancelButtonTitle="Annuler"
+                    />
+                </View>
                 <ScrollView>
                     {
-                        this.state.groupedEvents.map((groupedEvent, i) => {
-                            return <Text key={i} style={styles.groupedEvent} >{ groupedEvent.clientName + ' (' + groupedEvent.events.length + ')' }</Text>
-                        })
-                    }
-                    {
-                        this.state.groupedEvents.length > 0 ? (
-                            <View style={styles.containerValidateButton}>
-                                <Button 
-                                    onPress={ this.handleOpenMail.bind(this) }
-                                    inverted rounded
-                                >
-                                Préparer le mail
-                                </Button>
-                            </View>                            
-                        ) : (
-                            <View></View>
+                        _.map(
+                            _.groupBy(this.state.events.filter(e => _.isString(e.clientName) == true), "clientName"), 
+                            (events, clientName) => {
+                                return <Text key={clientName} style={styles.groupedEvent} >{ clientName + ' (' + events.length + ')' }</Text>
+                            }
                         )
                     }
-                    <View>
-                        {
-                            this.state.events.map((event, i, events) => _this.renderItem.call(_this, event, i, events))
-                        }
-                    </View>
+                    <View style={styles.containerValidateButton}>
+                        <Button 
+                            onPress={ this.handleOpenClientMail.bind(this) }
+                            inverted rounded
+                        >
+                        Préparer le mail
+                        </Button>
+                    </View>     
+                    <FlatList
+                        data={this.state.events
+                            .filter(e => !_.isString(e.clientName) && (e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1 || e.title.search(new RegExp(`${this.state.query}`, 'i')) > -1))}
+                        renderItem={({item, index}) => _this.renderItem.call(_this, item, index)}
+                        keyExtractor={_this._keyExtractor}
+                    />
                 </ScrollView>
-                {
-                    this.state.eventsSelected.length > 0 ? (
-                        <View style={styles.containerValidateButton}>
-                            <Button 
-                                onPress={ this.handleValidateGroupEvents.bind(this) }
-                                inverted rounded
-                            >
-                                Grouper
-                            </Button>
-                        </View>
-                    ) : (
-                        <View></View>
-                    )
-                }
+                <View style={styles.containerValidateButton}>
+                    <Button 
+                        onPress={ this.handleValidateGroupEvents.bind(this) }
+                        inverted rounded
+                    >
+                        Grouper
+                    </Button>
+                </View>
             </View>
         );
     }
+
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 15,
+        paddingTop: 0,
         backgroundColor: '#efeff4',
+    },
+    searchbarContainer: {
+        paddingBottom: 0,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#D1D1D1'
+    },
+    searchBar: {
+        backgroundColor: '#ffffff'
+    },
+    inputContainer: {
+        backgroundColor: '#efeff4'
     },
     date: {
         marginTop: 25,

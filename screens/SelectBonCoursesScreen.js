@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, RefreshControl, Button as ButtonNative } from 'react-native';
+import { ScrollView, FlatList, StyleSheet, View, Text, RefreshControl, AsyncStorage, Button as ButtonNative } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { Button } from 'react-native-ios-kit';
 import moment from 'moment';
@@ -7,11 +7,12 @@ import localFR from '../constants/MomentI8n';
 import { Calendar, Permissions } from 'expo';
 import ItemCalendar from '../components/ItemCalendar';
 import LoadingLabel from '../components/LoadingLabel';
+import update from 'immutability-helper';
+import { EventStorage } from '../store/Storage';
 
 moment.locale('fr', localFR);
 
 let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
-let idTimeout;
 
 export default class SelectBonCoursesScreenScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -21,7 +22,7 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
             headerRight: (
                 <ButtonNative
                     onPress={() => state.params.handleReset()} 
-                    title="Reset"
+                    title="Actualiser"
                 />
             ),
         }
@@ -34,44 +35,39 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
             query: "",
             isLoading: false,
             events: [],
-            eventsSelected: [],
             refreshing: false
+        }
+
+        this.viewabilityConfig = {
+            waitForInteraction: true,
+            viewAreaCoveragePercentThreshold: 95
         }
     }
 
     componentDidMount() {
+        this.setState({
+            isLoading: true
+        })
+        this.refreshEvents();
         this.props.navigation.setParams({ handleReset: () => this.resetState() });
     }
 
     resetState() {
-        this.setState({
-            query: "",
-            isLoading: false,
-            events: [],
-            eventsSelected: []
-        })
+        this.refreshEvents();
     }
 
     onRefreshList() {
-        this.setState({refreshing: true, eventsSelected: []});
-        setTimeout(() => this.updateEventsList(), 500);
+        this.setState({refreshing: true});
+        setTimeout(() => this.refreshEvents(), 500);
     }
 
     handleChangeQuery(query) {
-        clearTimeout(idTimeout);
-        this.setState({ query: query });
-        if( query.length > 2 ) {
-            const _this = this;
-            _this.setState({ isLoading: true })
-            idTimeout = setTimeout(() => {
-                _this.updateEventsList();
-            }, 500)
-        } else {
-            this.setState({ isLoading: false, events: [] })
-        }
+        this.setState({
+            query: query
+        });
     }
 
-    async updateEventsList() {
+    async refreshEvents() {
         const { status } = await Permissions.askAsync(Permissions.CALENDAR);
         if (status !== 'granted') {
             AlertIOS.alert('Vous devez authoriser l\'accès au calendrier');
@@ -80,90 +76,79 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
         let startDate = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let endDate = moment(new Date()).add(30, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let _this = this;
-        this.setState({ eventsSelected: [] })
         Calendar.getEventsAsync([Calendar.DEFAULT], startDate, endDate).then(fulfilled => {
-            const regex = new RegExp(`${_this.state.query.trim()}`, 'i');
-            events = fulfilled.filter(event => event.location.search(regex) > -1 || event.title.search(regex) > -1)
-            if(fulfilled.length > 0) {
-                _this.setState({ isLoading: false, events: events, refreshing: false});
-            } else {
-                _this.setState({ isLoading: false, events: [], refreshing: false });
-            }
+            _this.setState({ isLoading: false, events: fulfilled, refreshing: false});
         })
     }
 
-    handleValidate() {
+    async handleValidate() {
+        let eventsSelected = this.state.events.filter(e => e.isSelected == true);
+        await EventStorage.addEvents(eventsSelected);
+        this.unselectAllEvents();
         const {navigate} = this.props.navigation;
-        navigate("GroupBonCourses", { events: this.state.eventsSelected });
+        navigate("GroupBonCourses");
+    }
+
+    unselectAllEvents() {
+        let events = this.state.events.map(e => {
+            e.isSelected = false;
+            return e;
+        });
+        this.setState({ events: events });
     }
 
     handleSelectItem(event) {
-        const _this = this;
-        let isSelected = false;
-        this.state.eventsSelected.map(es => {
-            if(es.id === event.id && es.startDate == event.startDate) {
-                isSelected = true
-            }
+        let index = this.getIndexOfEventInList(event.id, event.startDate)
+        this.setState({
+            events: update(this.state.events, {[index]: {isSelected: {$set: !event.isSelected}}}),
         });
-        
-        if(isSelected) {
-            // We remove the event
-            let arrTmp = [...this.state.eventsSelected];
-            arrTmp = arrTmp.filter(es => event.id != es.id && event.startDate != es.startDate);
-            this.setState({
-                eventsSelected: arrTmp
-            });
-        } else {
-            // We add the event
-            this.setState({
-                eventsSelected: [
-                    ..._this.state.eventsSelected, 
-                    {
-                        id: event.id, 
-                        title: event.title, 
-                        location: event.location,
-                        startDate: event.startDate,
-                        endDate: event.endDate,
-                        isReccurent: event.recurrenceRule ? Number.isInteger(event.recurrenceRule.occurrence) : false,
-                        isIterative: false
-                    }
-                ]
-            });
+    }
+
+    getIndexOfEventInList(id, startDate) {
+        for (let i = 0; i < this.state.events.length; i++) {
+            const event = this.state.events[i];
+            if(event.id == id && event.startDate == startDate) {
+                return i;
+            }
         }
     }
 
-    renderItem(event, i, events) {
-        let isSelected = false;
-        this.state.eventsSelected.map(e => {
-            if(event.id == e.id && event.startDate == e.startDate) {
-                isSelected = true;
-            }
-        });
+    renderItem(event, i) {
+        let date = null;
+
         if(i == 0) {
             lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
         }
-        const date = (
-            <Text key={ event.id + '_01' } style={ styles.date } >
-                { moment(event.startDate).format("DD MMMM YYYY") }
-            </Text>
-        )
+        
         const itemCalendar = (
             <ItemCalendar key={ event.id + event.startDate } 
                 title={event.title} 
                 location={ event.location }
                 startDate={ event.startDate }
-                selected={ isSelected }
+                selected={ event.isSelected }
                 onPress={ this.handleSelectItem.bind(this, event) }
             />
         )
 
         if(moment(event.startDate).format("YYYYMMDD") > lastDate) {
             lastDate = moment(event.startDate).format("YYYYMMDD");
-            return [date, itemCalendar];
-        } else {
-            return itemCalendar;
+            date = (
+                <View key={ event.id + event.startDate + '_date' }>
+                    <Text style={ styles.date } >
+                        { moment(event.startDate).format("DD MMMM") }
+                    </Text>
+                    <View style={styles.divider}></View>
+                </View>
+            )
         }
+
+        return [
+            date,
+            itemCalendar
+        ];
     }
+
+    _keyExtractor = (item, index) => item.id + item.startDate + index;
 
     render() {
         const _this = this;
@@ -182,38 +167,28 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
                         cancelButtonTitle="Annuler"
                     />
                 </View>
-                <ScrollView
+                <FlatList
                     refreshControl={
                         <RefreshControl
                             refreshing={ this.state.refreshing }
                             onRefresh={ this.onRefreshList.bind(this) }
                         />  
                     }  
-                >
-                    <View>
-                        {
-                            !this.state.isLoading ? (
-                                this.state.events.map((event, i, events) => _this.renderItem.call(_this, event, i, events))
-                            ) : (
-                                <LoadingLabel />
-                            )
-                        }
-                    </View>
-                </ScrollView>
-                {
-                    this.state.eventsSelected.length > 0 ? (
-                        <View style={styles.containerValidateButton}>
-                            <Button 
-                                onPress={ this.handleValidate.bind(this) }
-                                inverted rounded
-                            >
-                                Valider
-                            </Button>
-                        </View>
-                    ) : (
-                        <View></View>
-                    )
-                }
+                    data={this.state.events
+                        .filter(e => e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1 || e.title.search(new RegExp(`${this.state.query}`, 'i')) > -1)}
+                    renderItem={({item, index}) => _this.renderItem.call(_this, item, index)}
+                    keyExtractor={_this._keyExtractor}
+                    removeClippedSubviews={true}
+                    maxToRenderPerBatch={40}
+                />
+                <View style={styles.containerValidateButton}>
+                    <Button 
+                        onPress={ this.handleValidate.bind(this) }
+                        inverted rounded
+                    >
+                        Enregistrer et/ou voir les courses
+                    </Button>
+                </View>
             </View>
         );
     }

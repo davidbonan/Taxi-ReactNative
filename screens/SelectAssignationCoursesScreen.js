@@ -176,7 +176,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         if(moment(event.startDate).format("YYYYMMDD") > lastDate) {
             lastDate = moment(event.startDate).format("YYYYMMDD");
             date = (
-                <View key={ event.id + '_01' }>
+                <View key={ event.id + event.startDate + '_date' }>
                     <Text style={ styles.date } >
                         { moment(event.startDate).format("DD MMMM") }
                     </Text>
@@ -188,7 +188,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         if(moment(event.startDate).format("HH") > lastTime || moment(event.startDate).format("HH") < lastTime ) {
             lastTime = moment(event.startDate).format("HH");
             time = (
-                <Text key={ event.id + '_01_' } style={ styles.time } >
+                <Text key={ event.id + event.startDate + '_time' } style={ styles.time } >
                     { moment(event.startDate).format("HH:00") }
                 </Text>
             )
