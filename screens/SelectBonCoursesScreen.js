@@ -1,12 +1,11 @@
 import React from 'react';
-import { ScrollView, FlatList, StyleSheet, View, Text, RefreshControl, AsyncStorage, Button as ButtonNative } from 'react-native';
+import { ScrollView, FlatList, StyleSheet, View, Text, RefreshControl, Button as ButtonNative } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { Button } from 'react-native-ios-kit';
 import moment from 'moment';
 import localFR from '../constants/MomentI8n';
 import { Calendar, Permissions } from 'expo';
 import ItemCalendar from '../components/ItemCalendar';
-import LoadingLabel from '../components/LoadingLabel';
 import update from 'immutability-helper';
 import { EventStorage } from '../store/Storage';
 
@@ -18,11 +17,17 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
         const { state } = navigation;
         return {
-            headerTitle: 'Sélectionner les bons',
+            headerTitle: 'Bons',
             headerRight: (
                 <ButtonNative
                     onPress={() => state.params.handleReset()} 
                     title="Actualiser"
+                />
+            ),
+            headerLeft: (
+                <ButtonNative
+                    onPress={() => state.params.toggleAll()} 
+                    title={navigation.getParam('headerLeftTitle', {title: ''}).title}
                 />
             ),
         }
@@ -35,7 +40,8 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
             query: "",
             isLoading: false,
             events: [],
-            refreshing: false
+            refreshing: false,
+            toggle: false,
         }
 
         this.viewabilityConfig = {
@@ -49,11 +55,34 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
             isLoading: true
         })
         this.refreshEvents();
-        this.props.navigation.setParams({ handleReset: () => this.resetState() });
+        this.props.navigation.setParams({ 
+            handleReset: () => this.resetState(), 
+            toggleAll: () => this.toggleAll(),
+            headerLeftTitle: {title: !this.state.toggle ? 'Tout sélectionner' : 'Tout désélectionner'}
+        });
     }
 
     resetState() {
+        this.setState({ isLoading: true })
         this.refreshEvents();
+    }
+
+    toggleAll() {
+        let valuesToUpdate = {}
+        let newValue = !this.state.toggle;
+        this.state.events
+            .filter(e => e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1 || e.title.search(new RegExp(`${this.state.query}`, 'i')) > -1)
+            .map(e => {
+                let index = this.getIndexOfEventInList(e.id, e.startDate);
+                valuesToUpdate[index] = {isSelected: {$set: newValue}}
+            });
+        this.setState({
+            toggle: newValue,
+            events: update(this.state.events, valuesToUpdate)
+        });
+        this.props.navigation.setParams({
+            headerLeftTitle: {title: !newValue ? 'Tout sélectionner' : 'Tout désélectionner'}
+        })
     }
 
     onRefreshList() {
@@ -98,7 +127,7 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
     }
 
     handleSelectItem(event) {
-        let index = this.getIndexOfEventInList(event.id, event.startDate)
+        let index = this.getIndexOfEventInList(event.id, event.startDate);
         this.setState({
             events: update(this.state.events, {[index]: {isSelected: {$set: !event.isSelected}}}),
         });

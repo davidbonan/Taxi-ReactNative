@@ -26,7 +26,8 @@ export default class SelectAssignationCoursesScreen extends React.Component {
             isLoading: true,
             refreshing: false,
             events: [],
-            query: ""
+            query: "",
+            toggle: true
         }
     }
 
@@ -132,6 +133,21 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         this.refreshEvents();
     }
 
+    handleToggleItems() {
+        let valuesToUpdate = {}
+        let newValue = this.state.toggle;
+        this.state.events
+            .filter(e => e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1)
+            .map(e => {
+                let index = this.getIndexOfEventInList(e.id, e.startDate);
+                valuesToUpdate[index] = {isSelected: {$set: newValue}}
+            });
+        this.setState({
+            toggle: !newValue,
+            events: update(this.state.events, valuesToUpdate)
+        });
+    }
+
     handleChangeQuery(query) {
         this.setState({
             query: query
@@ -219,7 +235,6 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                     />
                 </View>
                 <ScrollView
-                    //stickyHeaderIndices={[0, 3]}
                     refreshControl={
                         <RefreshControl
                           refreshing={ this.state.refreshing }
@@ -227,14 +242,21 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                         />  
                     }  
                 >
-                {
-                    !this.state.isLoading ? (
-                        this.state.events.filter(e => e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1)
-                                        .map((event, i, events) => _this.renderItem.call(_this, event, i, events))
-                    ) : (
-                        <LoadingLabel />
-                    )
-                }
+                    <Button 
+                        style={ styles.toggleContainer }
+                        onPress={ this.handleToggleItems.bind(this) }
+                        inline
+                    >
+                        {this.state.toggle ? 'Tout sélectionner' : 'Tout désélectionner'}
+                    </Button>
+                    {
+                        !this.state.isLoading ? (
+                            this.state.events.filter(e => e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1)
+                                            .map((event, i, events) => _this.renderItem.call(_this, event, i, events))
+                        ) : (
+                            <LoadingLabel />
+                        )
+                    }
                 </ScrollView>
                 <View style={styles.containerValidateButton}>
                     <Button 
@@ -292,4 +314,8 @@ const styles = StyleSheet.create({
     inputContainer: {
         backgroundColor: '#efeff4'
     },
+    toggleContainer: {
+        marginTop: 10,
+        marginLeft: 10
+    }
 });

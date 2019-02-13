@@ -31,7 +31,8 @@ export default class GroupBonCoursesScreen extends React.Component {
         
         this.state = {
             query: "",
-            events: []
+            events: [],
+            toggle: false
         }
     }
 
@@ -212,6 +213,22 @@ export default class GroupBonCoursesScreen extends React.Component {
         });
     }
 
+    async handleToggleItems() {
+        let valuesToUpdate = {}
+        let newValue = this.state.toggle;
+        await this.state.events
+            .filter(e => !_.isString(e.clientName) && (e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1 || e.title.search(new RegExp(`${this.state.query}`, 'i')) > -1))
+            .map(async e => {
+                let index = this.getIndexOfEventInList(e.id, e.startDate);
+                valuesToUpdate[index] = {isSelected: {$set: newValue}}
+                await EventStorage.updateEvent(e, { isSelected: newValue });
+            });
+        this.setState({
+            toggle: !newValue,
+            events: update(this.state.events, valuesToUpdate)
+        });
+    }
+
     async handleGroupItemWithClientName(event, clientName) {
         let index = this.getIndexOfEventInList(event.id, event.startDate)
         this.setState({
@@ -329,7 +346,14 @@ export default class GroupBonCoursesScreen extends React.Component {
                         >
                         Préparer le mail
                         </Button>
-                    </View>     
+                    </View> 
+                    <Button 
+                        style={ styles.toggleContainer }
+                        onPress={ this.handleToggleItems.bind(this) }
+                        inline
+                    >
+                        {this.state.toggle ? 'Tout sélectionner' : 'Tout désélectionner'}
+                    </Button>
                     <FlatList
                         data={this.state.events
                             .filter(e => !_.isString(e.clientName) && (e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1 || e.title.search(new RegExp(`${this.state.query}`, 'i')) > -1))}
@@ -342,7 +366,7 @@ export default class GroupBonCoursesScreen extends React.Component {
                         onPress={ this.handleValidateGroupEvents.bind(this) }
                         inverted rounded
                     >
-                        Grouper
+                        Grouper les courses sélectionnées
                     </Button>
                 </View>
             </View>
@@ -383,5 +407,9 @@ const styles = StyleSheet.create({
     groupedEvent: {
         padding: 10,
         backgroundColor: '#fff'
+    },
+    toggleContainer: {
+        marginTop: 10,
+        marginLeft: 10
     }
 });
