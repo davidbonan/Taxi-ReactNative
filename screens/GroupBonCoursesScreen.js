@@ -5,13 +5,12 @@ import { SearchBar } from 'react-native-elements';
 import { Calendar, Permissions } from 'expo';
 import moment from 'moment';
 import ItemCalendar from '../components/ItemCalendar';
+import DateCalendar from '../components/DateCalendar';
 import _ from 'lodash';
 import update from 'immutability-helper';
 import Locations from '../constants/Locations';
 import { EventStorage } from '../store/Storage';
 import { no_accent } from '../functions';
-
-let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
 
 export default class GroupBonCoursesScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -291,7 +290,7 @@ export default class GroupBonCoursesScreen extends React.Component {
         let date = null;
 
         if(i == 0) {
-            lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
+            this.lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
         }
         
         const itemCalendar = (
@@ -310,15 +309,10 @@ export default class GroupBonCoursesScreen extends React.Component {
             />
         )
 
-        if(moment(event.startDate).format("YYYYMMDD") > lastDate) {
-            lastDate = moment(event.startDate).format("YYYYMMDD");
+        if(moment(event.startDate).format("YYYYMMDD") > this.lastDate) {
+            this.lastDate = moment(event.startDate).format("YYYYMMDD");
             date = (
-                <View key={ event.id + event.startDate + '_date' }>
-                    <Text style={ styles.date } >
-                        { moment(event.startDate).format("DD MMMM") }
-                    </Text>
-                    <View style={styles.divider}></View>
-                </View>
+                <DateCalendar key={ event.id + event.startDate + '_date' } startDate={event.startDate} />
             )
         }
 

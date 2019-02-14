@@ -1,36 +1,26 @@
 import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Alert, AlertIOS } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import moment from 'moment';
 
-export default class ItemCalendar extends React.Component {
-    constructor(props) {
-        super(props)
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return false;
-    }
-
-    render () {
-        const { startDate } = this.props;
-
-        return (
-            <View>
-                <Text style={ styles.date } >
-                    { moment(startDate).format("DD MMMM") }
-                </Text>
-                <View></View>
-            </View>
-        );
-    }
+const DateCalendar = ({ startDate }) => {
+    return (
+        <View>
+            <Text style={ styles.dateLabel } >
+                { moment(startDate).format("DD MMMM") }
+            </Text>
+            <View style={ styles.divider }></View>
+        </View>
+    );
 }
 
+export default DateCalendar;
+
 const styles = StyleSheet.create({
-    date: {
+    dateLabel: {
         marginTop: 25,
         marginBottom: 5,
         marginRight: 10,
-        marginLeft: 50,
+        marginLeft: 10,
         fontSize: 14,
         color: '#979797'
     },

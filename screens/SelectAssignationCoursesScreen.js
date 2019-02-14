@@ -2,6 +2,8 @@ import React from 'react';
 import { ScrollView, StyleSheet, View, Text, Alert, RefreshControl, AlertIOS } from 'react-native';
 import moment from 'moment';
 import ItemCalendar from '../components/ItemCalendar';
+import DateCalendar from '../components/DateCalendar';
+import TimeCalendar from '../components/TimeCalendar';
 import { Calendar, SMS, Permissions } from 'expo';
 import localFR from '../constants/MomentI8n';
 import LoadingLabel from '../components/LoadingLabel';
@@ -11,9 +13,6 @@ import update from 'immutability-helper';
 import { no_accent } from '../functions';
 
 moment.locale('fr', localFR);
-
-let lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
-let lastTime = "00";
 
 export default class SelectAssignationCoursesScreen extends React.Component {
     static navigationOptions = {
@@ -176,8 +175,11 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         let time = null;
 
         if(i == 0) {
-            lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
-            lastTime = "00";
+            console.log(i)
+            console.log(event.title)
+            console.log(moment(event.startDate).format("HH") !== this.lastTime)
+            this.lastDate = false;
+            this.lastTime = false;
         }
         
         const itemCalendar = (
@@ -190,24 +192,17 @@ export default class SelectAssignationCoursesScreen extends React.Component {
             />
         )
 
-        if(moment(event.startDate).format("YYYYMMDD") > lastDate) {
-            lastDate = moment(event.startDate).format("YYYYMMDD");
+        if(moment(event.startDate).format("YYYYMMDD") !== this.lastDate) {
+            this.lastDate = moment(event.startDate).format("YYYYMMDD");
             date = (
-                <View key={ event.id + event.startDate + '_date' }>
-                    <Text style={ styles.date } >
-                        { moment(event.startDate).format("DD MMMM") }
-                    </Text>
-                    <View style={styles.divider}></View>
-                </View>
+                <DateCalendar key={ event.id + event.startDate + '_date' } startDate={event.startDate} />
             )
         }
 
-        if(moment(event.startDate).format("HH") > lastTime || moment(event.startDate).format("HH") < lastTime ) {
-            lastTime = moment(event.startDate).format("HH");
+        if(moment(event.startDate).format("HH") !== this.lastTime) {
+            this.lastTime = moment(event.startDate).format("HH");
             time = (
-                <Text key={ event.id + event.startDate + '_time' } style={ styles.time } >
-                    { moment(event.startDate).format("HH:00") }
-                </Text>
+                <TimeCalendar  key={ event.id + event.startDate + '_time' } startDate={ event.startDate } />
             )
         }
 

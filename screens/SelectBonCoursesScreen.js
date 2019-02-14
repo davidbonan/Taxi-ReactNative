@@ -13,9 +13,6 @@ import { no_accent } from '../functions';
 
 moment.locale('fr', localFR);
 
-let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
-let sectionHeader = []
-
 export default class SelectBonCoursesScreenScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
         const { state } = navigation;
@@ -149,8 +146,7 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
         let date = null;
 
         if(i == 0) {
-            sectionHeader = [];
-            lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
+            this.lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
         }
         
         const itemCalendar = (
@@ -163,9 +159,8 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
             />
         )
 
-        if(moment(event.startDate).format("YYYYMMDD") > lastDate) {
-            lastDate = moment(event.startDate).format("YYYYMMDD");
-            sectionHeader.push(i);
+        if(moment(event.startDate).format("YYYYMMDD") > this.lastDate) {
+            this.lastDate = moment(event.startDate).format("YYYYMMDD");
             date = (
                 <DateCalendar startDate={event.startDate} />
             )
