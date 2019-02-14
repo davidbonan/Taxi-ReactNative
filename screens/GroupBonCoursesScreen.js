@@ -9,6 +9,7 @@ import _ from 'lodash';
 import update from 'immutability-helper';
 import Locations from '../constants/Locations';
 import { EventStorage } from '../store/Storage';
+import { no_accent } from '../functions';
 
 let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
 
@@ -313,6 +314,13 @@ export default class GroupBonCoursesScreen extends React.Component {
 
     _keyExtractor = (item, index) => item.id + item.startDate + index;
 
+    _filter = (e) => {
+        let title = no_accent(e.title);
+        let location = no_accent(e.location);
+        let query = no_accent(this.state.query);
+        return !_.isString(e.clientName) && (location.search(new RegExp(`${query}`, 'i')) > -1 || title.search(new RegExp(`${query}`, 'i')) > -1);
+    }
+
     render() {
         const _this = this;
         return (
@@ -356,7 +364,7 @@ export default class GroupBonCoursesScreen extends React.Component {
                     </Button>
                     <FlatList
                         data={this.state.events
-                            .filter(e => !_.isString(e.clientName) && (e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1 || e.title.search(new RegExp(`${this.state.query}`, 'i')) > -1))}
+                            .filter(this._filter)}
                         renderItem={({item, index}) => _this.renderItem.call(_this, item, index)}
                         keyExtractor={_this._keyExtractor}
                     />

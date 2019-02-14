@@ -8,6 +8,7 @@ import LoadingLabel from '../components/LoadingLabel';
 import { Button } from 'react-native-ios-kit';
 import { SearchBar } from 'react-native-elements';
 import update from 'immutability-helper';
+import { no_accent } from '../functions';
 
 moment.locale('fr', localFR);
 
@@ -217,6 +218,12 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         ];
     }
 
+    _filter = (e) => {
+        let location = no_accent(e.location);
+        let query = no_accent(this.state.query);
+        return location.search(new RegExp(`${query}`, 'i')) > -1
+    }
+
     render() {
         const _this = this;
         return (
@@ -251,7 +258,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                     </Button>
                     {
                         !this.state.isLoading ? (
-                            this.state.events.filter(e => e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1)
+                            this.state.events.filter(this._filter)
                                             .map((event, i, events) => _this.renderItem.call(_this, event, i, events))
                         ) : (
                             <LoadingLabel />

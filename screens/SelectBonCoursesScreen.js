@@ -8,6 +8,7 @@ import { Calendar, Permissions } from 'expo';
 import ItemCalendar from '../components/ItemCalendar';
 import update from 'immutability-helper';
 import { EventStorage } from '../store/Storage';
+import { no_accent } from '../functions';
 
 moment.locale('fr', localFR);
 
@@ -179,6 +180,13 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
 
     _keyExtractor = (item, index) => item.id + item.startDate + index;
 
+    _filter = (e) => {
+        let title = no_accent(e.title);
+        let location = no_accent(e.location);
+        let query = no_accent(this.state.query);
+        return location.search(new RegExp(`${query}`, 'i')) > -1 || title.search(new RegExp(`${query}`, 'i')) > -1
+    }
+
     render() {
         const _this = this;
         return (
@@ -204,7 +212,7 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
                         />  
                     }  
                     data={this.state.events
-                        .filter(e => e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1 || e.title.search(new RegExp(`${this.state.query}`, 'i')) > -1)}
+                        .filter(this._filter)}
                     renderItem={({item, index}) => _this.renderItem.call(_this, item, index)}
                     keyExtractor={_this._keyExtractor}
                     removeClippedSubviews={true}
