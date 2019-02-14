@@ -1,11 +1,12 @@
 import React from 'react';
-import { ScrollView, FlatList, StyleSheet, View, Text, RefreshControl, Button as ButtonNative } from 'react-native';
+import { SectionList, FlatList, StyleSheet, View, Text, RefreshControl, Button as ButtonNative } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { Button } from 'react-native-ios-kit';
 import moment from 'moment';
 import localFR from '../constants/MomentI8n';
 import { Calendar, Permissions } from 'expo';
 import ItemCalendar from '../components/ItemCalendar';
+import DateCalendar from '../components/DateCalendar';
 import update from 'immutability-helper';
 import { EventStorage } from '../store/Storage';
 import { no_accent } from '../functions';
@@ -13,6 +14,7 @@ import { no_accent } from '../functions';
 moment.locale('fr', localFR);
 
 let lastDate = moment(new Date()).subtract(5, 'years').format("YYYYMMDD");
+let sectionHeader = []
 
 export default class SelectBonCoursesScreenScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -147,11 +149,12 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
         let date = null;
 
         if(i == 0) {
+            sectionHeader = [];
             lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
         }
         
         const itemCalendar = (
-            <ItemCalendar key={ event.id + event.startDate } 
+            <ItemCalendar
                 title={event.title} 
                 location={ event.location }
                 startDate={ event.startDate }
@@ -162,20 +165,15 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
 
         if(moment(event.startDate).format("YYYYMMDD") > lastDate) {
             lastDate = moment(event.startDate).format("YYYYMMDD");
+            sectionHeader.push(i);
             date = (
-                <View key={ event.id + event.startDate + '_date' }>
-                    <Text style={ styles.date } >
-                        { moment(event.startDate).format("DD MMMM") }
-                    </Text>
-                    <View style={styles.divider}></View>
-                </View>
+                <DateCalendar startDate={event.startDate} />
             )
         }
-
-        return [
-            date,
-            itemCalendar
-        ];
+        if(date) {
+            return <View key={ event.id + event.startDate } >{date}{itemCalendar}</View>
+        }
+        return <View key={ event.id + event.startDate } >{itemCalendar}</View>
     }
 
     _keyExtractor = (item, index) => item.id + item.startDate + index;
@@ -215,8 +213,10 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
                         .filter(this._filter)}
                     renderItem={({item, index}) => _this.renderItem.call(_this, item, index)}
                     keyExtractor={_this._keyExtractor}
-                    removeClippedSubviews={true}
-                    maxToRenderPerBatch={40}
+                    removeClippedSubviews={true} // true : Unmount item out of screen
+                    legacyImplementation={true}
+                    maxToRenderPerBatch={10}
+                    updateCellsBatchingPeriod={200}
                 />
                 <View style={styles.containerValidateButton}>
                     <Button 

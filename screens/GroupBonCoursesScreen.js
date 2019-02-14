@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, AlertIOS, Linking, FlatList, Button as ButtonNative, Alert } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, AlertIOS, Linking, FlatList,  Button as ButtonNative, Alert } from 'react-native';
 import { Button } from 'react-native-ios-kit';
 import { SearchBar } from 'react-native-elements';
 import { Calendar, Permissions } from 'expo';
@@ -40,6 +40,7 @@ export default class GroupBonCoursesScreen extends React.Component {
     async componentDidMount() {
         this.props.navigation.setParams({ clearStorage: () => this.clearStorage() })
         let eventsInStorage = await EventStorage.getEvents();
+        eventsInStorage = _.sortBy(eventsInStorage, e => { return new moment(e.startDate); });
         this.setState({
             events: this.matchEventWithDestination(eventsInStorage),
         })
@@ -47,12 +48,27 @@ export default class GroupBonCoursesScreen extends React.Component {
 
     clearStorage() {
         const _this = this;
-        EventStorage.clear().then(() => {
-            Alert.alert("Le stockage a bien été vidé.")
-            _this.setState({
-                events: []
-            });
-        });
+        AlertIOS.alert(
+            'Supprimer les courses en mémoire',
+            'Voulez-vous supprimer les courses groupées et sélectionnées du stockage ?',
+            [
+                {
+                    text: 'Non',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Oui',
+                    onPress: () => {
+                        EventStorage.clear().then(() => {
+                            Alert.alert("Le stockage a bien été vidé.")
+                            _this.setState({
+                                events: []
+                            });
+                        });
+                    }
+                },
+            ],
+        );
     }
 
     matchEventWithDestination(events) {
