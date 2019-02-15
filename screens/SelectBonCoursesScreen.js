@@ -1,5 +1,5 @@
 import React from 'react';
-import { SectionList, FlatList, StyleSheet, View, Text, RefreshControl, Button as ButtonNative } from 'react-native';
+import { FlatList, StyleSheet, View, Text, RefreshControl, Button as ButtonNative } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { Button } from 'react-native-ios-kit';
 import moment from 'moment';

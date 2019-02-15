@@ -59,78 +59,21 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         })
     }
 
-    handleValidateButton() {
-        const _this = this;
-        AlertIOS.prompt(
-            'Nom du chauffeur',
-            "Entrer le nom du chauffeur qui s'ajoutera à l'évenement",
-            [
-                {
-                  text: 'Annuler',
-                  style: 'cancel'
-                },
-                {
-                  text: 'OK',
-                  onPress: (text) => this.handleAssignButton.call(_this, text) ,
-                },
-            ],
-            'plain-text',
-        );
-    }
-
-    async handleAssignButton(taxiName) {
-        const _this = this;
-        let body = "Courses attribuées : \n\n";
+    async handleAssignButton() {
         let eventsSelected = this.state.events.filter(e => e.isSelected == true);
+        let headerWithDate = eventsSelected.length > 0 ? " pour le " + moment(eventsSelected[0].startDate).format("DD/MM") : "";
+        let body = "Courses attribuées"+ headerWithDate + " : \n\n";
         eventsSelected.map(event => {
-            body += event.title + "\n \n";
+            body += event.title + "\n\n";
         });
 
-        SMS.sendSMSAsync("06", body).then( ({ result }) => {
+        SMS.sendSMSAsync(" ", body).then( ({ result }) => {
             if(result == 'sent') {
-                AlertIOS.alert(
-                    'Ajouter le nom du chauffeur',
-                    "Voulez-vous ajouter le nom du chauffeur qui s'ajoutera à l'évenement",
-                    [
-                        {
-                          text: 'Non',
-                          style: 'cancel',
-                          onPress: () => {
-                            _this.refreshEvents();
-                          }
-                        },
-                        {
-                          text: 'Oui',
-                          onPress: () => _this.updateEventsSelected.call(_this, taxiName, eventsSelected) ,
-                        },
-                    ]
-                );
+                Alert.alert("Les courses ont correctement été envoyées.")          
             } else {
                 Alert.alert("Problème lors de l'envoi", "Un problème est survenu lors de l'envoi du SMS. Aucun SMS envoyés.")
             }
         });
-    }
-
-    async updateEventsSelected(taxiName, events) {
-        for(let i = 0; i < events.length; i++) {
-            let event = events[i];
-            let opt = {
-                instanceStartDate: event.startDate, 
-                futureEvents: false
-            };
-            let values = {
-                startDate: event.startDate,
-                endDate: event.endDate,
-                location: event.location + " " + taxiName
-            }
-            try {
-                let resp = await Calendar.updateEventAsync(event.id, values, opt);
-            } catch (error) {
-                Alert.alert("Problème lors de la mise à jour de l'évenement", 
-                "Un problème est survenu lors de l'ajout du nom du chauffeur dans l'évenement, veuillez l'ajouter manuellement")
-            }
-        }
-        this.refreshEvents();
     }
 
     handleToggleItems() {
@@ -175,9 +118,6 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         let time = null;
 
         if(i == 0) {
-            console.log(i)
-            console.log(event.title)
-            console.log(moment(event.startDate).format("HH") !== this.lastTime)
             this.lastDate = false;
             this.lastTime = false;
         }
@@ -262,7 +202,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                 </ScrollView>
                 <View style={styles.containerValidateButton}>
                     <Button 
-                        onPress={ this.handleValidateButton.bind(this) }
+                        onPress={ this.handleAssignButton.bind(this) }
                         inverted rounded
                     >
                         Assigner à un chauffeur

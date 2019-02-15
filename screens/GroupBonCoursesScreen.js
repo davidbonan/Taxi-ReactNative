@@ -4,6 +4,7 @@ import { Button } from 'react-native-ios-kit';
 import { SearchBar } from 'react-native-elements';
 import { Calendar, Permissions } from 'expo';
 import moment from 'moment';
+import ListGroupedEvents from '../components/ListGroupedEvents'
 import ItemCalendar from '../components/ItemCalendar';
 import DateCalendar from '../components/DateCalendar';
 import _ from 'lodash';
@@ -38,6 +39,10 @@ export default class GroupBonCoursesScreen extends React.Component {
 
     async componentDidMount() {
         this.props.navigation.setParams({ clearStorage: () => this.clearStorage() })
+        await this.fetchEvents();
+    }
+
+    async fetchEvents() {
         let eventsInStorage = await EventStorage.getEvents();
         eventsInStorage = _.sortBy(eventsInStorage, e => { return new moment(e.startDate); });
         this.setState({
@@ -164,7 +169,7 @@ export default class GroupBonCoursesScreen extends React.Component {
                     body += moment(iterativeEvent.startDate).format("DD/MM/YY") + " bon itératif 35 transports aller retour\n";  
                 }
 
-                body += "\n";
+                body += "\n\n\n";
             }
         ); 
 
@@ -277,6 +282,10 @@ export default class GroupBonCoursesScreen extends React.Component {
         await EventStorage.updateEvent(event, { destination: destination });
     }
 
+    async handleClearGroupedEvents() {
+        await this.fetchEvents();
+    }
+
     getIndexOfEventInList(id, startDate) {
         for (let i = 0; i < this.state.events.length; i++) {
             const event = this.state.events[i];
@@ -322,6 +331,15 @@ export default class GroupBonCoursesScreen extends React.Component {
         ];
     }
 
+    renderItemsGrouped(clientName, events) {
+        return _.map(
+            _.groupBy(this.state.events.filter(e => _.isString(e.clientName) == true), "clientName"), 
+            (events, clientName) => {
+                return <Text key={clientName} style={styles.groupedEvent} >{ clientName + ' (' + events.length + ')' }</Text>
+            }
+        );
+    }
+
     _keyExtractor = (item, index) => item.id + item.startDate + index;
 
     _filter = (e) => {
@@ -331,8 +349,13 @@ export default class GroupBonCoursesScreen extends React.Component {
         return !_.isString(e.clientName) && (location.search(new RegExp(`${query}`, 'i')) > -1 || title.search(new RegExp(`${query}`, 'i')) > -1);
     }
 
+    _filterGroupedEvents = () => {
+        return _.groupBy(this.state.events.filter(e => _.isString(e.clientName) == true), "clientName");
+    }
+
     render() {
         const _this = this;
+
         return (
             <View style={styles.container}>
                 <View style={styles.searchbarContainer}>
@@ -349,14 +372,10 @@ export default class GroupBonCoursesScreen extends React.Component {
                     />
                 </View>
                 <ScrollView>
-                    {
-                        _.map(
-                            _.groupBy(this.state.events.filter(e => _.isString(e.clientName) == true), "clientName"), 
-                            (events, clientName) => {
-                                return <Text key={clientName} style={styles.groupedEvent} >{ clientName + ' (' + events.length + ')' }</Text>
-                            }
-                        )
-                    }
+                    <ListGroupedEvents 
+                        groupedEvents={ this._filterGroupedEvents.call(this) }
+                        onClearGroupedEvent={this.handleClearGroupedEvents.bind(this)}
+                    />
                     <View style={styles.containerValidateButton}>
                         <Button 
                             onPress={ this.handleOpenClientMail.bind(this) }
@@ -411,20 +430,8 @@ const styles = StyleSheet.create({
     inputContainer: {
         backgroundColor: '#efeff4'
     },
-    date: {
-        marginTop: 25,
-        marginBottom: 5,
-        marginRight: 10,
-        marginLeft: 50,
-        fontSize: 14,
-        color: '#979797'
-    },
     containerValidateButton: {
         margin: 10
-    },
-    groupedEvent: {
-        padding: 10,
-        backgroundColor: '#fff'
     },
     toggleContainer: {
         marginTop: 10,
