@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, Alert, RefreshControl, AlertIOS } from 'react-native';
+import { ScrollView, StyleSheet, View, Linking, Alert, RefreshControl, AlertIOS } from 'react-native';
 import moment from 'moment';
 import ItemCalendar from '../components/ItemCalendar';
 import DateCalendar from '../components/DateCalendar';
@@ -59,14 +59,18 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         })
     }
 
-    async handleAssignButton() {
+    constructBodyOfMessage() {
         let eventsSelected = this.state.events.filter(e => e.isSelected == true);
         let headerWithDate = eventsSelected.length > 0 ? " pour le " + moment(eventsSelected[0].startDate).format("DD/MM") : "";
         let body = "Courses attribuées"+ headerWithDate + " : \n\n";
         eventsSelected.map(event => {
             body += event.title + "\n\n";
         });
+        return body;
+    }
 
+    async sendBySms() {
+        let body = this.constructBodyOfMessage();
         SMS.sendSMSAsync(" ", body).then( ({ result }) => {
             if(result == 'sent') {
                 Alert.alert("Les courses ont correctement été envoyées.")
@@ -75,6 +79,35 @@ export default class SelectAssignationCoursesScreen extends React.Component {
                 Alert.alert("Problème lors de l'envoi", "Un problème est survenu lors de l'envoi du SMS. Aucun SMS envoyés.")
             }
         });
+    }
+
+    sendByWhatsapp() {
+        const _this = this;
+        let body = this.constructBodyOfMessage();
+        let link = "whatsapp://send?text=" + encodeURI(body);
+        Linking.canOpenURL(link)
+            .then(r => {
+                Linking.openURL(link);
+                AlertIOS.alert(
+                    'Désélection des courses',
+                    'Voulez-vous désélectionner les courses envoyées ?',
+                    [
+                        {
+                            text: 'Non',
+                            style: 'cancel',
+                        },
+                        {
+                            text: 'Oui',
+                            onPress: () => {
+                                _this.toggleItems(false);
+                            }
+                        },
+                    ],
+                );
+            })
+            .catch(r => {
+                Alert.alert("Impossible de trouver l'application Whatsapp")
+            })
     }
 
     toggleItems(value) {
@@ -89,6 +122,31 @@ export default class SelectAssignationCoursesScreen extends React.Component {
             toggle: !value,
             events: update(this.state.events, valuesToUpdate)
         });
+    }
+
+    handleAssignButton() {
+        AlertIOS.alert(
+            'Méthode d\'envoi',
+            'Voulez-vous envoyer les courses par SMS ou par Whatsapp ?',
+            [
+                {
+                    text: 'Non',
+                    style: 'cancel',
+                },
+                {
+                    text: 'SMS',
+                    onPress: () => {
+                        this.sendBySms()
+                    }
+                },
+                {
+                    text: 'Whatsapp',
+                    onPress: () => {
+                        this.sendByWhatsapp()
+                    }
+                },
+            ],
+        );
     }
 
     handleToggleItems() {
