@@ -3,6 +3,8 @@ import { StyleSheet, AlertIOS, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { Button } from 'react-native-ios-kit';
 import { EventStorage } from '../store/Storage';
+import moment from 'moment';
+import _ from 'lodash';
 
 class GroupedEvents extends React.Component {
     constructor(props) {
@@ -18,8 +20,15 @@ class GroupedEvents extends React.Component {
 
     handleViewEvents() {
         let eventsFormated = "\n";
-        this.props.events.map(e => {
+        let lastDate = moment(new Date()).subtract(7, 'years').format("YYYYMMDD");
+        let events = _.sortBy(this.props.events, event => { return new moment(event.startDate); });
+        events.map(e => {
+            let currentDate = moment(e.startDate).format("YYYYMMDD")
+            if(currentDate > lastDate) {
+                eventsFormated += "\n" + moment(e.startDate).format("DD MMMM") + "\n\n\n\n";
+            }
             eventsFormated += e.title + "\n\n";
+            lastDate = currentDate;
         })
         AlertIOS.alert(
             "Liste des courses pour " + this.props.clientName,

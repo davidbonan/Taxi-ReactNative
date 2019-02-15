@@ -69,26 +69,31 @@ export default class SelectAssignationCoursesScreen extends React.Component {
 
         SMS.sendSMSAsync(" ", body).then( ({ result }) => {
             if(result == 'sent') {
-                Alert.alert("Les courses ont correctement été envoyées.")          
+                Alert.alert("Les courses ont correctement été envoyées.")
+                this.toggleItems(false);
             } else {
                 Alert.alert("Problème lors de l'envoi", "Un problème est survenu lors de l'envoi du SMS. Aucun SMS envoyés.")
             }
         });
     }
 
-    handleToggleItems() {
+    toggleItems(value) {
         let valuesToUpdate = {}
-        let newValue = this.state.toggle;
         this.state.events
             .filter(e => e.location.search(new RegExp(`${this.state.query}`, 'i')) > -1)
             .map(e => {
                 let index = this.getIndexOfEventInList(e.id, e.startDate);
-                valuesToUpdate[index] = {isSelected: {$set: newValue}}
+                valuesToUpdate[index] = {isSelected: {$set: value}}
             });
         this.setState({
-            toggle: !newValue,
+            toggle: !value,
             events: update(this.state.events, valuesToUpdate)
         });
+    }
+
+    handleToggleItems() {
+        let value = this.state.toggle;
+        this.toggleItems(value);
     }
 
     handleChangeQuery(query) {

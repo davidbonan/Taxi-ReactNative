@@ -102,7 +102,7 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
             AlertIOS.alert('Vous devez authoriser l\'accès au calendrier');
         }
 
-        let startDate = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+        let startDate = moment(new Date()).subtract(60, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let endDate = moment(new Date()).add(30, 'days').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
         let _this = this;
         Calendar.getEventsAsync([Calendar.DEFAULT], startDate, endDate).then(fulfilled => {
