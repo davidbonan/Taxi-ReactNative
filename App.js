@@ -1,8 +1,15 @@
 import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { createStore, applyMiddleware, compose } from 'redux';
+import { Provider, connect } from 'react-redux';
+import thunk from 'redux-thunk';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 import { ThemeProvider } from 'react-native-ios-kit';
+
+import reducer from './redux/reducers/reducers';
+
+const store = createStore(reducer, applyMiddleware(thunk));
 
 export default class App extends React.Component {
   state = {
@@ -20,13 +27,14 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <ThemeProvider>
-          <View style={styles.container}>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-            <AppNavigator />
-          </View>
-        </ThemeProvider>
-        
+        <Provider store={store}>
+          <ThemeProvider>
+            <View style={styles.container}>
+              {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+              <AppNavigator />
+            </View>
+          </ThemeProvider>
+        </Provider>
       );
     }
   }

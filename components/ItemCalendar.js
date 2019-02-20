@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: 10,
         paddingBottom: 10,
+        paddingRight: 10,
         borderBottomWidth: 1,
         borderColor: '#D1D1D1'
     },

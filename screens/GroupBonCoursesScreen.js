@@ -12,8 +12,10 @@ import update from 'immutability-helper';
 import Locations from '../constants/Locations';
 import { EventStorage } from '../store/Storage';
 import { no_accent } from '../functions';
+import { connect } from 'react-redux';
+import { loadEvents } from '../redux/reducers/groupedCoursesReducer';
 
-export default class GroupBonCoursesScreen extends React.Component {
+class GroupBonCoursesScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
         const { state } = navigation;
         return {
@@ -29,10 +31,9 @@ export default class GroupBonCoursesScreen extends React.Component {
 
     constructor(props) {
         super(props);
-        
+
         this.state = {
             query: "",
-            events: [],
             toggle: false
         }
     }
@@ -43,11 +44,14 @@ export default class GroupBonCoursesScreen extends React.Component {
     }
 
     async fetchEvents() {
-        let eventsInStorage = await EventStorage.getEvents();
-        eventsInStorage = _.sortBy(eventsInStorage, e => { return new moment(e.startDate); });
+        const _this = this;
+        this.props.loadEvents();
+        /*
+        let events = _.sortBy(this.state.events, e => { return new moment(e.startDate); });
         this.setState({
-            events: this.matchEventWithDestination(eventsInStorage),
+            events: this.matchEventWithDestination(events),
         })
+        */
     }
 
     clearStorage() {
@@ -94,7 +98,7 @@ export default class GroupBonCoursesScreen extends React.Component {
 
     async groupEventByClientName(clientName) {
         const _this = this
-        let selectedEvents = this.state.events.filter(e => e.isSelected == true);
+        let selectedEvents = this.state.props.filter(e => e.isSelected == true);
         selectedEvents.map( async (e) => {
             // Suppression de la selection
             await _this.handleSelectItem.call(_this, e);
@@ -125,7 +129,7 @@ export default class GroupBonCoursesScreen extends React.Component {
     getFormatedBody() {
         let body = "Bonjour Mme/Mr. xxxx, \nJe te fais la liste des bons. \n\n";
         _.map(
-            _.groupBy(this.state.events.filter(e => _.isString(e.clientName) == true), "clientName"), 
+            _.groupBy(this.props.events.filter(e => _.isString(e.clientName) == true), "clientName"), 
             (events, clientName) => {
                 
                 body += "- " + clientName + "\n";
@@ -287,8 +291,8 @@ export default class GroupBonCoursesScreen extends React.Component {
     }
 
     getIndexOfEventInList(id, startDate) {
-        for (let i = 0; i < this.state.events.length; i++) {
-            const event = this.state.events[i];
+        for (let i = 0; i < this.props.events.length; i++) {
+            const event = this.props.events[i];
             if(event.id == id && event.startDate == startDate) {
                 return i;
             }
@@ -333,7 +337,7 @@ export default class GroupBonCoursesScreen extends React.Component {
 
     renderItemsGrouped(clientName, events) {
         return _.map(
-            _.groupBy(this.state.events.filter(e => _.isString(e.clientName) == true), "clientName"), 
+            _.groupBy(this.props.events.filter(e => _.isString(e.clientName) == true), "clientName"), 
             (events, clientName) => {
                 return <Text key={clientName} style={styles.groupedEvent} >{ clientName + ' (' + events.length + ')' }</Text>
             }
@@ -350,12 +354,12 @@ export default class GroupBonCoursesScreen extends React.Component {
     }
 
     _filterGroupedEvents = () => {
-        return _.groupBy(this.state.events.filter(e => _.isString(e.clientName) == true), "clientName");
+        return _.groupBy(this.props.events.filter(e => _.isString(e.clientName) == true), "clientName");
     }
 
     render() {
         const _this = this;
-
+        const { events } = this.props
         return (
             <View style={styles.container}>
                 <View style={styles.searchbarContainer}>
@@ -392,8 +396,7 @@ export default class GroupBonCoursesScreen extends React.Component {
                         {this.state.toggle ? 'Tout sélectionner' : 'Tout désélectionner'}
                     </Button>
                     <FlatList
-                        data={this.state.events
-                            .filter(this._filter)}
+                        data={events.filter(this._filter)}
                         renderItem={({item, index}) => _this.renderItem.call(_this, item, index)}
                         keyExtractor={_this._keyExtractor}
                     />
@@ -411,6 +414,19 @@ export default class GroupBonCoursesScreen extends React.Component {
     }
 
 }
+
+const mapStateToProps = state => {
+    return {
+        events: state.groupedCoursesReducer.events
+    };
+};
+
+const mapDispatchToProps = {
+    loadEvents
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupBonCoursesScreen);
+
 
 const styles = StyleSheet.create({
     container: {
