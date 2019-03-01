@@ -70,7 +70,7 @@ export default class ItemCalendar extends React.Component {
     }
 
     render () {
-        const { title, location, selected, enableSwitch, isChecked, destination, enableDestination } = this.props;
+        const { title, location, isCopy, selected, enableSwitch, isChecked, destination, enableDestination } = this.props;
 
         return (
             <TouchableOpacity {...this.props}>
@@ -88,7 +88,8 @@ export default class ItemCalendar extends React.Component {
                     </View>
                     <View style={styles.contentContainer}>
                         <Text style={styles.title}>
-                            { title }
+                            {title}
+                            {isCopy && ' (COPIE)'}
                         </Text>
                         <Text style={styles.location}>
                             { location }

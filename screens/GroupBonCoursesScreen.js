@@ -185,6 +185,9 @@ export default class GroupBonCoursesScreen extends React.Component {
         }
 
         this.state.events.filter(e => _.isString(e.clientName)).map(async event => {
+            if(event.isCopy) {
+                return;
+            }
             let newlocation = event.location.replace(new RegExp("bon", "ig"), '');
             let opt = {
                 instanceStartDate: event.startDate, 
@@ -305,6 +308,7 @@ export default class GroupBonCoursesScreen extends React.Component {
         const itemCalendar = (
             <ItemCalendar key={ event.id + event.startDate } 
                 title={event.title} 
+                isCopy={event.isCopy} 
                 location={ event.location }
                 startDate={ event.startDate }
                 selected={ event.isSelected }

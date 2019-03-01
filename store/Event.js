@@ -4,18 +4,28 @@ const KEY_EVENTS_LIST = "KEY_EVENTS_LIST";
 
 export async function addEvents(events) {
     let keys = [];
-    let eventsFormated = events.map(e => {
+    let eventsFormated = [];
+    events.map(e => {
         let key = e.id + e.startDate;
         let value = JSON.stringify(e);
         keys.push(key);
-        return [key, value];
-    })
+        eventsFormated.push([key, value]);
+        if(e.title.indexOf("+") > -1) {
+            let keyCopy = e.id + "_copy" + e.startDate;
+            keys.push(keyCopy);
+            eventsFormated.push([keyCopy, JSON.stringify({
+                ...e,
+                id: e.id + '_copy',
+                isCopy: true
+            })])
+        }
+    });
     await AsyncStorage.multiSet(eventsFormated);
     await pushMultipleKeyEvent(keys);
 }
 
-export async function addEvent({ id, startDate }, values) {
-    let key = id + startDate;
+export async function addEvent(event) {
+    let key = event.id + event.startDate;
     let Stringifiedvalues = JSON.stringify(values);
     await pushKeyEvent(key);
     await AsyncStorage.setItem(key, Stringifiedvalues);
