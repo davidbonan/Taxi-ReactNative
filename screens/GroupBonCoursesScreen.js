@@ -42,11 +42,14 @@ export default class GroupBonCoursesScreen extends React.Component {
         await this.fetchEvents();
     }
 
-    async fetchEvents() {
+    async fetchEvents(matchEvents = true) {
         let eventsInStorage = await EventStorage.getEvents();
         eventsInStorage = _.sortBy(eventsInStorage, e => { return new moment(e.startDate); });
+        if(matchEvents) {
+            eventsInStorage = this.matchEventWithDestination(eventsInStorage);
+        }
         this.setState({
-            events: this.matchEventWithDestination(eventsInStorage),
+            events: eventsInStorage,
         })
     }
 
@@ -154,7 +157,7 @@ export default class GroupBonCoursesScreen extends React.Component {
                         // Si l'on change de jour
                         if(previousDate && previousDate.format('YYYYMM') < currentDate.format('YYYYMM')) {
                             body = body.slice(0, -1);
-                            body += "/" + previousDate.format('MM/YY') + "\n";
+                            body += "/" + previousDate.format('MM/YY') + " et ";
                         }
                         body += currentDate.format('DD') + '-';
                         previousDate = currentDate;
@@ -289,6 +292,11 @@ export default class GroupBonCoursesScreen extends React.Component {
         await this.fetchEvents();
     }
 
+    async handleRemoveEvent(event) {
+        await EventStorage.removeEvent(event);
+        await this.fetchEvents(false);
+    }
+
     getIndexOfEventInList(id, startDate) {
         for (let i = 0; i < this.state.events.length; i++) {
             const event = this.state.events[i];
@@ -316,6 +324,8 @@ export default class GroupBonCoursesScreen extends React.Component {
                 enableSwitch={ true }
                 isChecked={ event.isIterative }
                 onCheck={ this.handleToggleIterativeCheckbox.bind(this, event) }
+                enableRemove={ true }
+                onRemove={ this.handleRemoveEvent.bind(this, event) }
                 enableDestination={ true }
                 destination={ event.destination }
                 onChangeDestination={(destination) => this.handleChangeDestination.call(this, event, destination) }

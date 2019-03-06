@@ -33,8 +33,8 @@ export async function addEvent(event) {
 
 export async function removeEvent({ id, startDate }) {
     let key = id + startDate;
-    AsyncStorage.removeItem(key);
-    //TODO remove key from listKey
+    await AsyncStorage.removeItem(key);
+    await popKeyEvent(key);
 }
 
 export async function getEvents() {
@@ -74,6 +74,14 @@ async function pushKeyEvent(key) {
         }
         eventsIds.push(key);
         await AsyncStorage.setItem(KEY_EVENTS_LIST, JSON.stringify(eventsIds));
+    }
+}
+
+async function popKeyEvent(key) {
+    let eventsIds = await getKeysEventsList();
+    if(eventsIds != null) {
+        let output = eventsIds.filter(k => k !== key);
+        await AsyncStorage.setItem(KEY_EVENTS_LIST, JSON.stringify(output));
     }
 }
 

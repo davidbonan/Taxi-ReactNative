@@ -1,5 +1,6 @@
 import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Alert, AlertIOS } from "react-native";
+import { Icon } from 'expo';
 import { Button } from 'react-native-ios-kit';
 import { CheckBox } from 'react-native-elements'
 import Locations from '../constants/Locations';
@@ -30,6 +31,12 @@ export default class ItemCalendar extends React.Component {
         const { onCheck } = this.props;
         if(onCheck)
             onCheck();
+    }
+
+    handleRemove() {
+        const { onRemove } = this.props;
+        if(onRemove)
+            onRemove();
     }
 
     handleChangeDestination() {
@@ -70,7 +77,7 @@ export default class ItemCalendar extends React.Component {
     }
 
     render () {
-        const { title, location, isCopy, selected, enableSwitch, isChecked, destination, enableDestination } = this.props;
+        const { title, location, isCopy, selected, enableSwitch, isChecked, enableRemove, destination, enableDestination } = this.props;
 
         return (
             <TouchableOpacity {...this.props}>
@@ -111,10 +118,24 @@ export default class ItemCalendar extends React.Component {
                                     <CheckBox
                                         containerStyle={ styles.checkBoxIterative }
                                         right
-                                        title='Course itérative'
+                                        title='Itérative'
                                         checked={isChecked}
                                         onPress={ this.handleCheckIterative.bind(this) }
                                     />
+                                ) : (null)
+                            }
+                            {
+                                enableRemove ? (
+                                    <TouchableOpacity
+                                        onPress={ this.handleRemove.bind(this) }
+                                        style={ styles.trashContainer }
+                                        >
+                                        <Icon.Ionicons
+                                            name="ios-trash"
+                                            size={20}
+                                            style={{ color: 'red', opacity: 0.7}}
+                                        />
+                                    </TouchableOpacity>
                                 ) : (null)
                             }
                         </View>                        
@@ -182,6 +203,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff', 
         borderWidth: 0, 
         margin: 0, 
-        padding: 0
+        padding: 0,
+        marginTop: 5
+    }, 
+    trashContainer: {
+        flex: 0,
+        paddingRight: 10,
+        marginTop: 5
     }
 });

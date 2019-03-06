@@ -64,7 +64,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
         let headerWithDate = eventsSelected.length > 0 ? " pour le " + moment(eventsSelected[0].startDate).format("DD/MM") : "";
         let body = "Courses attribuées"+ headerWithDate + " : \n\n";
         eventsSelected.map(event => {
-            body += event.title + "\n\n";
+            body += event.title + "\n\n\n";
         });
         return body;
     }
