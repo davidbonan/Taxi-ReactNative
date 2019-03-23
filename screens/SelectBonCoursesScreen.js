@@ -111,8 +111,23 @@ export default class SelectBonCoursesScreenScreen extends React.Component {
     }
 
     async handleValidate() {
+        let eventsToAdd = [];
         let eventsSelected = this.state.events.filter(e => e.isSelected == true);
-        await EventStorage.addEvents(eventsSelected);
+        let eventsInStorage = await EventStorage.getEvents();
+        for (let i = 0; i < eventsSelected.length; i++) {
+            const event = eventsSelected[i];
+            let eventsAlreadyInStorage = eventsInStorage.filter(e => {
+                if(e.id == event.id && e.startDate == event.startDate) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            if(eventsAlreadyInStorage.length == 0) {
+                eventsToAdd.push(event);
+            }
+        }
+        await EventStorage.addEvents(eventsToAdd);
         this.unselectAllEvents();
         const {navigate} = this.props.navigation;
         navigate("GroupBonCourses");

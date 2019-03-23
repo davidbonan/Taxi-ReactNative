@@ -46,7 +46,7 @@ export default class GroupBonCoursesScreen extends React.Component {
         let eventsInStorage = await EventStorage.getEvents();
         eventsInStorage = _.sortBy(eventsInStorage, e => { return new moment(e.startDate); });
         if(matchEvents) {
-            eventsInStorage = this.matchEventWithDestination(eventsInStorage);
+            eventsInStorage = await this.matchEventWithDestination(eventsInStorage);
         }
         this.setState({
             events: eventsInStorage,
@@ -78,8 +78,9 @@ export default class GroupBonCoursesScreen extends React.Component {
         );
     }
 
-    matchEventWithDestination(events) {
-        return events.map(e => {
+    async matchEventWithDestination(events) {
+        for (let j = 0; j < events.length; j++) {
+            const e = events[j];
             if(!e.destination) {
                 for (let i = 0; i < Locations.length; i++) {
                     const location = Locations[i];
@@ -90,9 +91,12 @@ export default class GroupBonCoursesScreen extends React.Component {
                         }
                     });
                 }
+                if(e.destination) {
+                    await EventStorage.updateEvent(e, {destination: e.destination});
+                }
             }
-            return e;
-        });
+        }
+        return events;
     }
 
     async groupEventByClientName(clientName) {
