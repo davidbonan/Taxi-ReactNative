@@ -84,7 +84,7 @@ export default class SelectAssignationCoursesScreen extends React.Component {
     sendByWhatsapp() {
         const _this = this;
         let body = this.constructBodyOfMessage();
-        let link = "whatsapp://send?text=" + encodeURI(body);
+        let link = "whatsapp://send?text=" + encodeURIComponent(body);
         Linking.canOpenURL(link)
             .then(r => {
                 Linking.openURL(link);
