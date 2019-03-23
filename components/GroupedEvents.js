@@ -25,9 +25,15 @@ class GroupedEvents extends React.Component {
         events.map(e => {
             let currentDate = moment(e.startDate).format("YYYYMMDD")
             if(currentDate > lastDate) {
-                eventsFormated += "\n" + moment(e.startDate).format("DD MMMM") + "\n\n\n\n";
+                eventsFormated += "\n===========\n";
+                eventsFormated += moment(e.startDate).format("DD MMMM");
+                eventsFormated += "\n===========\n\n\n\n";
             }
-            eventsFormated += e.title + "\n\n";
+            eventsFormated += e.title + "\n";
+            if(e.destination) {
+                eventsFormated += e.destination + "\n";
+            }
+            eventsFormated += "\n\n";
             lastDate = currentDate;
         })
         AlertIOS.alert(
