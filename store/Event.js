@@ -1,4 +1,5 @@
-import { AsyncStorage } from "react-native"
+import { AsyncStorage } from "react-native";
+import _ from 'lodash';
 
 const KEY_EVENTS_LIST = "KEY_EVENTS_LIST";
 
@@ -61,6 +62,16 @@ export async function updateEvent({ id, startDate }, values) {
 
 export async function clear() {
     await AsyncStorage.clear();
+}
+
+export async function clearEventsGouped() {
+    const events = await getEvents();
+    for (let i = 0; i < events.length; i++) {
+        const event = events[i];
+        if(_.isString(event.clientName) == true) {
+            await removeEvent(event);
+        }        
+    }
 }
 
 async function pushKeyEvent(key) {
