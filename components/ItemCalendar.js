@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Alert, AlertIOS } from "react-native";
-import { Icon } from 'expo';
+import { Ionicons } from '@expo/vector-icons';
 import { Button } from 'react-native-ios-kit';
 import { CheckBox } from 'react-native-elements'
 import Locations from '../constants/Locations';
@@ -130,7 +130,7 @@ export default class ItemCalendar extends React.Component {
                                         onPress={ this.handleRemove.bind(this) }
                                         style={ styles.trashContainer }
                                         >
-                                        <Icon.Ionicons
+                                        <Ionicons
                                             name="ios-trash"
                                             size={20}
                                             style={{ color: 'red', opacity: 0.7}}

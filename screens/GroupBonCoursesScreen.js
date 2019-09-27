@@ -12,7 +12,8 @@ import {
 } from "react-native";
 import { Button } from "react-native-ios-kit";
 import { SearchBar } from "react-native-elements";
-import { Calendar, Permissions } from "expo";
+import * as Calendar from 'expo-calendar';
+import * as Permissions from 'expo-permissions';
 import moment from "moment";
 import ListGroupedEvents from "../components/ListGroupedEvents";
 import ItemCalendar from "../components/ItemCalendar";

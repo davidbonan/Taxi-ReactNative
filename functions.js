@@ -1,6 +1,6 @@
 
 
-export function no_accent (s) {
+export function no_accent (s = "") {
     var r=s.toLowerCase();
     r = r.replace(new RegExp(/\s/g),"");
     r = r.replace(new RegExp(/[àáâãäå]/g),"a");
